@@ -1,0 +1,110 @@
+function Geometry_jacket(Num_floor,L_bottom,L_top,h_Jacket,h4,m)
+%本函数确定导管架各构件首、尾节点坐标值;
+%输入变量:Num_floor为导管架层数;L_bottom为导管架底部宽度;L_top为导管架顶部宽度;h_Jacket为导管架高度;h4为导管架底
+%部斜支撑竖向高度;m为导管架相邻两层相似比,等于下层高度除以上层高度;
+%按层数从上向下设计  
+global Member;
+if Num_floor==4
+    a1=L_bottom/2; %最下层水平支撑长度的一半;
+    a2=a1/m; %从下往上第二层水平支撑长度的一半;
+    a3=a2/m; %从下往上第三层水平支撑长度的一半;
+    a4=a3/m; %从下往上第四层水平支撑长度的一半;
+    a5=L_top/2; %导管架顶部宽度的一半;
+    h3=h4/m; %从下往上第二层斜竖向高度;
+    h2=h3/m; %从下往上第三层斜竖向高度;
+    %16条肢数据：将每个Leg，按照层数分段,从上向下；
+    Member.X0(1)=a4;Member.Y0(1)=h4+h3+h2;Member.Z0(1)=a4;Member.Xt(1)=a5;Member.Yt(1)=h_Jacket;Member.Zt(1)=a5;%构建1的首尾坐标值
+    Member.X0(2)=a4;Member.Y0(2)=h4+h3+h2;Member.Z0(2)=-a4;Member.Xt(2)=a5;Member.Yt(2)=h_Jacket;Member.Zt(2)=-a5;%构建2的首尾坐标值
+    Member.X0(3)=-a4;Member.Y0(3)=h4+h3+h2;Member.Z0(3)=-a4;Member.Xt(3)=-a5;Member.Yt(3)=h_Jacket;Member.Zt(3)=-a5;%构建3的首尾坐标值
+    Member.X0(4)=-a4;Member.Y0(4)=h4+h3+h2;Member.Z0(4)=a4;Member.Xt(4)=-a5;Member.Yt(4)=h_Jacket;Member.Zt(4)=a5;%构建4的首尾坐标值
+    Member.X0(5)=a3;Member.Y0(5)=h4+h3;Member.Z0(5)=a3;Member.Xt(5)=a4;Member.Yt(5)=h4+h3+h2;Member.Zt(5)=a4;%构建5的首尾坐标值
+    Member.X0(6)=a3;Member.Y0(6)=h4+h3;Member.Z0(6)=-a3;Member.Xt(6)=a4;Member.Yt(6)=h4+h3+h2;Member.Zt(6)=-a4;%构建6的首尾坐标值
+    Member.X0(7)=-a3;Member.Y0(7)=h4+h3;Member.Z0(7)=-a3;Member.Xt(7)=-a4;Member.Yt(7)=h4+h3+h2;Member.Zt(7)=-a4;%构建7的首尾坐标值
+    Member.X0(8)=-a3;Member.Y0(8)=h4+h3;Member.Z0(8)=a3;Member.Xt(8)=-a4;Member.Yt(8)=h4+h3+h2;Member.Zt(8)=a4;%构建8的首尾坐标值
+    Member.X0(9)=a2;Member.Y0(9)=h4;Member.Z0(9)=a2;Member.Xt(9)=a3;Member.Yt(9)=h4+h3;Member.Zt(9)=a3;%构建9的首尾坐标值
+    Member.X0(10)=a2;Member.Y0(10)=h4;Member.Z0(10)=-a2;Member.Xt(10)=a3;Member.Yt(10)=h4+h3;Member.Zt(10)=-a3;%构建10的首尾坐标值
+    Member.X0(11)=-a2;Member.Y0(11)=h4;Member.Z0(11)=-a2;Member.Xt(11)=-a3;Member.Yt(11)=h4+h3;Member.Zt(11)=-a3;%构建11的首尾坐标值
+    Member.X0(12)=-a2;Member.Y0(12)=h4;Member.Z0(12)=a2;Member.Xt(12)=-a3;Member.Yt(12)=h4+h3;Member.Zt(12)=a3;%构建12的首尾坐标值
+    Member.X0(13)=a1;Member.Y0(13)=0;Member.Z0(13)=a1;Member.Xt(13)=a2;Member.Yt(13)=h4;Member.Zt(13)=a2;%构建13的首尾坐标值
+    Member.X0(14)=a1;Member.Y0(14)=0;Member.Z0(14)=-a1;Member.Xt(14)=a2;Member.Yt(14)=h4;Member.Zt(14)=-a2;%构建14的首尾坐标值
+    Member.X0(15)=-a1;Member.Y0(15)=0;Member.Z0(15)=-a1;Member.Xt(15)=-a2;Member.Yt(15)=h4;Member.Zt(15)=-a2;%构建15的首尾坐标值
+    Member.X0(16)=-a1;Member.Y0(16)=0;Member.Z0(16)=a1;Member.Xt(16)=-a2;Member.Yt(16)=h4;Member.Zt(16)=a2;%构建16的首尾坐标值
+    %32条斜支撑数据
+    Member.X0(17)=a4;Member.Y0(17)=h4+h3+h2;Member.Z0(17)=a4;Member.Xt(17)=a5;Member.Yt(17)=h_Jacket;Member.Zt(17)=-a5;%构件17的起点、终点坐标值
+    Member.X0(18)=a4;Member.Y0(18)=h4+h3+h2;Member.Z0(18)=-a4;Member.Xt(18)=a5;Member.Yt(18)=h_Jacket;Member.Zt(18)=a5;%构件18的起点、终点坐标值
+    Member.X0(19)=a4;Member.Y0(19)=h4+h3+h2;Member.Z0(19)=-a4;Member.Xt(19)=-a5;Member.Yt(19)=h_Jacket;Member.Zt(19)=-a5;%构件19的起点、终点坐标值
+    Member.X0(20)=-a4;Member.Y0(20)=h4+h3+h2;Member.Z0(20)=-a4;Member.Xt(20)=a5;Member.Yt(20)=h_Jacket;Member.Zt(20)=-a5;%构件20的起点、终点坐标值
+    Member.X0(21)=-a4;Member.Y0(21)=h4+h3+h2;Member.Z0(21)=-a4;Member.Xt(21)=-a5;Member.Yt(21)=h_Jacket;Member.Zt(21)=-a5;%构件21的起点、终点坐标值
+    Member.X0(22)=-a4;Member.Y0(22)=h4+h3+h2;Member.Z0(22)=a4;Member.Xt(22)=-a5;Member.Yt(22)=h_Jacket;Member.Zt(22)=-a5;%构件22的起点、终点坐标值
+    Member.X0(23)=a4;Member.Y0(23)=h4+h3+h2;Member.Z0(23)=a4;Member.Xt(23)=-a5;Member.Yt(23)=h_Jacket;Member.Zt(23)=a5;%构件23的起点、终点坐标值
+    Member.X0(24)=-a4;Member.Y0(24)=h4+h3+h2;Member.Z0(24)=a4;Member.Xt(24)=a5;Member.Yt(24)=h_Jacket;Member.Zt(24)=a5;%构件24的起点、终点坐标值
+    Member.X0(25)=a3;Member.Y0(25)=h4+h3;Member.Z0(25)=a3;Member.Xt(25)=a4;Member.Yt(25)=h4+h3+h2;Member.Zt(25)=-a4;%构件25的起点、终点坐标值
+    Member.X0(26)=a3;Member.Y0(26)=h4+h3;Member.Z0(26)=-a3;Member.Xt(26)=a4;Member.Yt(26)=h4+h3+h2;Member.Zt(26)=a4;%构件26的起点、终点坐标值
+    Member.X0(27)=a3;Member.Y0(27)=h4+h3;Member.Z0(27)=-a3;Member.Xt(27)=-a4;Member.Yt(27)=h4+h3+h2;Member.Zt(27)=-a4;%构件27的起点、终点坐标值
+    Member.X0(28)=-a3;Member.Y0(28)=h4+h3;Member.Z0(28)=-a3;Member.Xt(28)=a4;Member.Yt(28)=h4+h3+h2;Member.Zt(28)=-a4;%构件28的起点、终点坐标值
+    Member.X0(29)=-a3;Member.Y0(29)=h4+h3;Member.Z0(29)=-a3;Member.Xt(29)=-a4;Member.Yt(29)=h4+h3+h2;Member.Zt(29)=a4;%构件29的起点、终点坐标值
+    Member.X0(30)=-a3;Member.Y0(30)=h4+h3;Member.Z0(30)=a3;Member.Xt(30)=-a4;Member.Yt(30)=h4+h3+h2;Member.Zt(30)=-a4;%构件30的起点、终点坐标值
+    Member.X0(31)=a3;Member.Y0(31)=h4+h3;Member.Z0(31)=a3;Member.Xt(31)=-a4;Member.Yt(31)=h4+h3+h2;Member.Zt(31)=a4;%构件31的起点、终点坐标值
+    Member.X0(32)=-a3;Member.Y0(32)=h4+h3;Member.Z0(32)=a3;Member.Xt(32)=a4;Member.Yt(32)=h4+h3+h2;Member.Zt(32)=a4;%构件32的起点、终点坐标值
+    Member.X0(33)=a2;Member.Y0(33)=h4;Member.Z0(33)=a2;Member.Xt(33)=a3;Member.Yt(33)=h4+h3;Member.Zt(33)=-a3;%构件33的起点、终点坐标值
+    Member.X0(34)=a2;Member.Y0(34)=h4;Member.Z0(34)=-a2;Member.Xt(34)=a3;Member.Yt(34)=h4+h3;Member.Zt(34)=a3;%构件34的起点、终点坐标值
+    Member.X0(35)=a2;Member.Y0(35)=h4;Member.Z0(35)=-a2;Member.Xt(35)=-a3;Member.Yt(35)=h4+h3;Member.Zt(35)=-a3;%构件35的起点、终点坐标值
+    Member.X0(36)=-a2;Member.Y0(36)=h4;Member.Z0(36)=-a2;Member.Xt(36)=a3;Member.Yt(36)=h4+h3;Member.Zt(36)=-a3;%构件36的起点、终点坐标值
+    Member.X0(37)=-a2;Member.Y0(37)=h4;Member.Z0(37)=-a2;Member.Xt(37)=-a3;Member.Yt(37)=h4+h3;Member.Zt(37)=a3;%构件37的起点、终点坐标值
+    Member.X0(38)=-a2;Member.Y0(38)=h4;Member.Z0(38)=a2;Member.Xt(38)=-a3;Member.Yt(38)=h4+h3;Member.Zt(38)=-a3;%构件38的起点、终点坐标值
+    Member.X0(39)=a2;Member.Y0(39)=h4;Member.Z0(39)=a2;Member.Xt(39)=-a3;Member.Yt(39)=h4+h3;Member.Zt(39)=a3;%构件39的起点、终点坐标值
+    Member.X0(40)=-a2;Member.Y0(40)=h4;Member.Z0(40)=a2;Member.Xt(40)=a3;Member.Yt(40)=h4+h3;Member.Zt(40)=a3;%构件40的起点、终点坐标值
+    Member.X0(41)=a1;Member.Y0(41)=0;Member.Z0(41)=a1;Member.Xt(41)=a2;Member.Yt(41)=h4;Member.Zt(41)=-a2;%构件41的起点、终点坐标值
+    Member.X0(42)=a1;Member.Y0(42)=0;Member.Z0(42)=-a1;Member.Xt(42)=a2;Member.Yt(42)=h4;Member.Zt(42)=a2;%构件42的起点、终点坐标值
+    Member.X0(43)=a1;Member.Y0(43)=0;Member.Z0(43)=-a1;Member.Xt(43)=-a2;Member.Yt(43)=h4;Member.Zt(43)=-a2;%构件43的起点、终点坐标值
+    Member.X0(44)=-a1;Member.Y0(44)=0;Member.Z0(44)=-a1;Member.Xt(44)=a2;Member.Yt(44)=h4;Member.Zt(44)=-a2;%构件44的起点、终点坐标值
+    Member.X0(45)=-a1;Member.Y0(45)=0;Member.Z0(45)=-a1;Member.Xt(45)=-a2;Member.Yt(45)=h4;Member.Zt(45)=a2;%构件45的起点、终点坐标值
+    Member.X0(46)=-a1;Member.Y0(46)=0;Member.Z0(46)=a1;Member.Xt(46)=-a2;Member.Yt(46)=h4;Member.Zt(46)=-a2;%构件46的起点、终点坐标值
+    Member.X0(47)=a1;Member.Y0(47)=0;Member.Z0(47)=a1;Member.Xt(47)=-a2;Member.Yt(47)=h4;Member.Zt(47)=a2;%构件47的起点、终点坐标值
+    Member.X0(48)=-a1;Member.Y0(48)=0;Member.Z0(48)=a1;Member.Xt(48)=a2;Member.Yt(48)=h4;Member.Zt(48)=a2;%构件48的起点、终点坐标值  
+elseif Num_floor==3
+    a1=L_bottom/2; %最下层水平支撑长度的一半;
+    a2=a1/m; %从下往上第二层水平支撑长度的一半;
+    a3=a2/m; %从下往上第三层水平支撑长度的一半;
+    a4=L_top/2; %导管架顶部宽度的一半;
+    h3=h4/m; %从下往上第二层斜竖向高度;
+    %12条肢数据，从上往下
+    Member.X0(1)=a3;Member.Y0(1)=h3+h2;Member.Z0(1)=a3;Member.Xt(1)=a4;Member.Yt(1)=h_Jacket;Member.Zt(1)=a4;%构建1的首尾坐标值
+    Member.X0(2)=a3;Member.Y0(2)=h3+h2;Member.Z0(2)=-a3;Member.Xt(2)=a4;Member.Yt(2)=h_Jacket;Member.Zt(2)=-a4;%构建2的首尾坐标值
+    Member.X0(3)=-a3;Member.Y0(3)=h3+h2;Member.Z0(3)=-a3;Member.Xt(3)=-a4;Member.Yt(3)=h_Jacket;Member.Zt(3)=-a4;%构建3的首尾坐标值
+    Member.X0(4)=-a3;Member.Y0(4)=h3+h2;Member.Z0(4)=a3;Member.Xt(4)=-a4;Member.Yt(4)=h_Jacket;Member.Zt(4)=a4;%构建4的首尾坐标值
+    Member.X0(5)=a2;Member.Y0(5)=h3;Member.Z0(5)=a2;Member.Xt(5)=a3;Member.Yt(5)=h3+h2;Member.Zt(5)=a3;%构件5的起点、终点坐标值
+    Member.X0(6)=a2;Member.Y0(6)=h3;Member.Z0(6)=-a2;Member.Xt(6)=a3;Member.Yt(6)=h3+h2;Member.Zt(6)=-a3;%构件6的起点、终点坐标值
+    Member.X0(7)=-a2;Member.Y0(7)=h3;Member.Z0(7)=-a2;Member.Xt(7)=-a3;Member.Yt(7)=h3+h2;Member.Zt(7)=-a3;%构件7的起点、终点坐标值
+    Member.X0(8)=-a2;Member.Y0(8)=h3;Member.Z0(8)=a2;Member.Xt(8)=-a3;Member.Yt(8)=h3+h2;Member.Zt(8)=a3;%构件8的起点、终点坐标值
+    Member.X0(9)=a1;Member.Y0(9)=0;Member.Z0(9)=a1;Member.Xt(9)=a2;Member.Yt(9)=h3;Member.Zt(9)=a2;%构件9的起点、终点坐标值
+    Member.X0(10)=a1;Member.Y0(10)=0;Member.Z0(10)=-a1;Member.Xt(10)=a2;Member.Yt(10)=h3;Member.Zt(10)=-a2;%构件10的起点、终点坐标值
+    Member.X0(11)=-a1;Member.Y0(11)=0;Member.Z0(11)=-a1;Member.Xt(11)=-a2;Member.Yt(11)=h3;Member.Zt(11)=-a2;%构件11的起点、终点坐标值
+    Member.X0(12)=-a1;Member.Y0(12)=0;Member.Z0(12)=a1;Member.Xt(12)=-a2;Member.Yt(12)=h3;Member.Zt(12)=a2;%构件12的起点、终点坐标值 
+    %24条斜支撑数据
+    Member.X0(13)=a3;Member.Y0(13)=h3+h2;Member.Z0(13)=a3;Member.Xt(13)=a4;Member.Yt(13)=h_Jacket;Member.Zt(13)=-a4;%构件13的起点、终点坐标值
+    Member.X0(14)=a3;Member.Y0(14)=h3+h2;Member.Z0(14)=-a3;Member.Xt(14)=a4;Member.Yt(14)=h_Jacket;Member.Zt(14)=a4;%构件14的起点、终点坐标值
+    Member.X0(15)=a3;Member.Y0(15)=h3+h2;Member.Z0(15)=-a3;Member.Xt(15)=-a4;Member.Yt(15)=h_Jacket;Member.Zt(15)=-a4;%构件15的起点、终点坐标值
+    Member.X0(16)=-a3;Member.Y0(16)=h3+h2;Member.Z0(16)=-a3;Member.Xt(16)=a4;Member.Yt(16)=h_Jacket;Member.Zt(16)=-a4;%构件16的起点、终点坐标值
+    Member.X0(17)=-a3;Member.Y0(17)=h3+h2;Member.Z0(17)=a3;Member.Xt(17)=-a4;Member.Yt(17)=h_Jacket;Member.Zt(17)=a4;%构件17的起点、终点坐标值
+    Member.X0(18)=-a3;Member.Y0(18)=h3+h2;Member.Z0(18)=a3;Member.Xt(18)=-a4;Member.Yt(18)=h_Jacket;Member.Zt(18)=-a4;%构件18的起点、终点坐标值
+    Member.X0(19)=a3;Member.Y0(19)=h3+h2;Member.Z0(19)=a3;Member.Xt(19)=-a4;Member.Yt(19)=h_Jacket;Member.Zt(19)=a4;%构件19的起点、终点坐标值
+    Member.X0(20)=-a3;Member.Y0(20)=h3+h2;Member.Z0(20)=a3;Member.Xt(20)=a4;Member.Yt(20)=h_Jacket;Member.Zt(20)=a4;%构件20的起点、终点坐标值
+    Member.X0(21)=a2;Member.Y0(21)=h3;Member.Z0(21)=a2;Member.Xt(21)=a3;Member.Yt(21)=h3+h2;Member.Zt(21)=-a3;%构件21的起点、终点坐标值
+    Member.X0(22)=a2;Member.Y0(22)=h3;Member.Z0(22)=-a2;Member.Xt(22)=a3;Member.Yt(22)=h3+h2;Member.Zt(22)=a3;%构件22的起点、终点坐标值
+    Member.X0(23)=a2;Member.Y0(23)=h3;Member.Z0(23)=-a2;Member.Xt(23)=-a3;Member.Yt(23)=h3+h2;Member.Zt(23)=-a3;%构件23的起点、终点坐标值
+    Member.X0(24)=-a2;Member.Y0(24)=h3;Member.Z0(24)=-a2;Member.Xt(24)=a3;Member.Yt(24)=h3+h2;Member.Zt(24)=-a3;%构件24的起点、终点坐标值
+    Member.X0(25)=-a2;Member.Y0(25)=h3;Member.Z0(25)=-a2;Member.Xt(25)=-a3;Member.Yt(25)=h3+h2;Member.Zt(25)=a3;%构件25的起点、终点坐标值
+    Member.X0(26)=-a2;Member.Y0(26)=h3;Member.Z0(26)=a2;Member.Xt(26)=-a3;Member.Yt(26)=h3+h2;Member.Zt(26)=-a3;%构件26的起点、终点坐标值
+    Member.X0(27)=a2;Member.Y0(27)=h3;Member.Z0(27)=a2;Member.Xt(27)=-a3;Member.Yt(27)=h3+h2;Member.Zt(27)=a3;%构件27的起点、终点坐标值
+    Member.X0(28)=-a2;Member.Y0(28)=h3;Member.Z0(28)=a2;Member.Xt(28)=a3;Member.Yt(28)=h3+h2;Member.Zt(28)=a3;%构件28的起点、终点坐标值
+    Member.X0(29)=a1;Member.Y0(29)=0;Member.Z0(29)=a1;Member.Xt(29)=a2;Member.Yt(29)=h3;Member.Zt(29)=-a2;%构件29的起点、终点坐标值
+    Member.X0(30)=a1;Member.Y0(30)=0;Member.Z0(30)=-a1;Member.Xt(30)=a2;Member.Yt(30)=h3;Member.Zt(30)=a2;%构件30的起点、终点坐标值
+    Member.X0(31)=a1;Member.Y0(31)=0;Member.Z0(31)=-a1;Member.Xt(31)=-a2;Member.Yt(31)=h3;Member.Zt(31)=-a2;%构件31的起点、终点坐标值
+    Member.X0(32)=-a1;Member.Y0(32)=0;Member.Z0(32)=-a1;Member.Xt(32)=a2;Member.Yt(32)=h3;Member.Zt(32)=-a2;%构件32的起点、终点坐标值
+    Member.X0(33)=-a1;Member.Y0(33)=0;Member.Z0(33)=-a1;Member.Xt(33)=-a2;Member.Yt(33)=h3;Member.Zt(33)=a2;%构件33的起点、终点坐标值
+    Member.X0(34)=-a1;Member.Y0(34)=0;Member.Z0(34)=a1;Member.Xt(34)=-a2;Member.Yt(34)=h3;Member.Zt(34)=-a2;%构件34的起点、终点坐标值
+    Member.X0(35)=a1;Member.Y0(35)=0;Member.Z0(35)=a1;Member.Xt(35)=-a2;Member.Yt(35)=h3;Member.Zt(35)=a2;%构件35的起点、终点坐标值
+    Member.X0(36)=-a1;Member.Y0(36)=0;Member.Z0(36)=a1;Member.Xt(36)=a2;Member.Yt(36)=h3;Member.Zt(36)=a2;%构件36的起点、终点坐标值
+end
+end

@@ -1,0 +1,44 @@
+This is the input file for py curve
+11.4			U_r						#Rated wind speed of wind turbine (m/s).
+24955.8			Ar						#Aera of rotor plane (m^2).
+6.0				n_min					#The minimum speed at which the wind turbine operates (rpm).
+9.6				n_max					#The maximum speed at which the wind turbine operates (rpm).
+119				z_hub					#Hub height relative to MSL (m).
+0				thrust_coef_code_pre	#Thrust coefficient of wind turbine determined by code (1) or user (0). 
+0.06			Ct_out					#Thrust coefficient of wind turbine for the rated wind speed.
+0.85			Ct_rated				##Thrust coefficient of parked wind turbine.                    #风机停机时推力系数
+5.5				D_Tower_top		        #Tower top diameter (m).
+7.67			D_Tower_bottom			#Tower bottom diameter (m).
+429000			m_t						#Total mass of tower (kg).
+89.63			h_Tower					#The height of the tower (m).
+676738			M_rna					#The total mass of rotor-nacelle-assembly (kg).
+10.53			av						#The inclination angle of the leg (deg).
+4				Num_floor				#Number of layers of the jacket.
+4				Num_pile				#Number of piles of the jacket.
+799000			Mtp						#Mass of transition piece (kg).
+14.0			L_top					#Width of jacket-top (m).
+0				h_jacket_code_predict	#Height of jacket determined by code (1) or user (0).                                #待补充
+76				h_jacket				#Height of jacket (m).
+7850			steel_density			#The density of steel (kg/m^3).
+2.0e11			E						#Young's modulus of steel (Pa).
+9.8				gravity					#gravitational acceleration (m/s^2)
+11.75			k_weibull				#Weibull scale parameter
+2.04			s_weibull				#Weibull shape parameter 
+1.225			air_density				#Density of air (kg/m^3).
+340.2			Lk						#Integral scale parameter (m).
+0.18			I_ref					#Turbulence intensity for the rated wind speed.
+42				Lambda					# Turbulence scale parameter (m).
+50				U_ref					#Reference wind speed for calss 1 wind farm (m/s).
+50.0			water_depth				#Water depth (m).
+1025			water_density			#Water density (kg/m^3).
+1.0				cd						#Drag coefficients
+2.0				cm						#Inertia coefficients
+9.4				Hs50					#50 year characteristic wave height (m).
+17.48			Hm50					#50 year extreme wave height (m).
+2.07			Hs2						#Common characteristic wave height (m).
+0.6				U_ss0					#Sub-surface current velocity (m/s).
+1.2				U_ns0					#Near surface current velocity (m/s).
+20				h_ref					#Reference depth of current (m).
+40				L_pile					#Length of pile (m).               
+10.0e3			wgh_soil				#Effective unit weight of soil (N/m^3)
+95.0e3			fs_limit				#Ultimate strength of soil (Pa).
