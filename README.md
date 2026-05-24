@@ -4,6 +4,26 @@ Offshore wind **jacket support structure preliminary design** toolkit (MATLAB).
 
 **Theory basis:** Implements the method in Xi R. et al. (2026), *Soil Dynamics and Earthquake Engineering* 207, 110344 — see [Docs/THEORY_REFERENCE.md](Docs/THEORY_REFERENCE.md).
 
+## Branches
+
+| Branch / tag | Purpose |
+|--------------|---------|
+| **`main`** | Current development baseline — directional-load workflow (PLAN Steps 1–8), active maintenance and new features |
+| **`legacy-early`** | Archived early implementation preserved for regression and historical comparison |
+| **`legacy-v1`** | Tag pointing to the same commit as `legacy-early` |
+
+Use **`main`** for normal clone, run, and contribution. Switch to `legacy-early` only when reproducing or comparing against the original project version:
+
+```bash
+git clone https://github.com/xirenqiang/Design-of-jacket-for-OWTs.git
+cd Design-of-jacket-for-OWTs
+# default checkout is main
+
+git fetch origin legacy-early
+git checkout legacy-early   # early archived version
+git checkout main           # return to current development line
+```
+
 ## Quick start
 
 | Goal | Command / file |
