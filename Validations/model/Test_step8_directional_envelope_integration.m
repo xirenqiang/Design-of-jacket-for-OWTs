@@ -118,6 +118,14 @@ assert(abs(D_brace - (0.5 + cfgResize.delta_D_brace)) < 1e-12, 'D_brace must use
 assert(D_leg ~= 1.2 && D_brace ~= 0.6, 'Paper-mode resize must not hard-reset to 1.2/0.6');
 fprintf('PASS: resize_member_sections uses configured deltas\n');
 
+cfgAutoStep9 = build_design_config(struct('load_direction_mode', 1));
+cfgLegacyStep9 = build_design_config(struct('load_direction_mode', 2));
+assert(strcmp(resolve_step9_deflection_path(cfgAutoStep9), 'directional_envelope'), ...
+    'Step 9 auto mode should use directional envelope');
+assert(strcmp(resolve_step9_deflection_path(cfgLegacyStep9), 'legacy_step9'), ...
+    'Step 9 legacy mode must stay on legacy path');
+fprintf('PASS: resolve_step9_deflection_path mode split\n');
+
 fprintf('All Step 8 directional envelope integration tests passed.\n');
 
 function [cache, stats] = touchHydroCache(cache, key, stats, value)

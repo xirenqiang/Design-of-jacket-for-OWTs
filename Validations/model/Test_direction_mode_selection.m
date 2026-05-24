@@ -24,6 +24,15 @@ useDirectionalAuto = (cfgAuto.load_direction_mode ~= 2);
 assert(useLegacy, 'legacy flag expected true');
 assert(useDirectionalAuto, 'directional flag expected true for auto');
 
+assert(strcmp(resolve_step9_deflection_path(cfgAuto), 'directional_envelope'), ...
+    'Step 9 auto mode should use directional envelope');
+assert(strcmp(resolve_step9_deflection_path(cfgLegacy), 'legacy_step9'), ...
+    'Step 9 legacy mode must stay on legacy path');
+cfgDeflectionOff = build_design_config(struct('load_direction_mode', 1, 'enable_directional_deflection', 0));
+assert(strcmp(resolve_step9_deflection_path(cfgDeflectionOff), 'legacy_step9'), ...
+    'Step 9 with deflection disabled must use legacy path');
+
 fprintf('PASS: mode_name dispatch\n');
 fprintf('PASS: direction_scenarios counts\n');
+fprintf('PASS: resolve_step9_deflection_path gating\n');
 fprintf('All direction mode selection smoke tests passed.\n');
