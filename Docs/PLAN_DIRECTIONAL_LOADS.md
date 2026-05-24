@@ -696,6 +696,19 @@ When `enable_directional_deflection = 1`:
 2. Use the same `β₁/β₂` metadata as Step 5.
 3. Report maximum tower-top deflection and controlling direction/environment case.
 
+**Implementation status (2026-05-24):** Step 9 complete.
+
+- `modules/compute_towertop_deflection_case.m` — single-case Step 9 deflection (legacy hydro vs directional `beta_wave`)
+- `modules/directional_deflection_envelope.m` — scenario loop, governing deflection metadata (`beta_wind`, `beta_wave`, `direction_case`, `environment_case`)
+- `modules/select_governing_deflection.m` — envelope maximum selection helper
+- `modules/resolve_step9_deflection_path.m` — Step 9 mode dispatch (`legacy_step9` vs `directional_envelope`)
+- `modules/DriveCodeJckDesign.m` — Step 9 mode gating via `enable_directional_deflection`; bottom-floor hydro reference (`Num_floor`); audit logs for governing direction
+- `Validations/model/Test_directional_deflection_envelope.m` — envelope selection, legacy isolation, output fields, beta=0 parity (all PASS)
+- `Validations/model/Test_step9_mode_gating.m` — Step 9 path gating and cfg validation (all PASS)
+- Regression updates: `Test_direction_mode_selection.m`, `Test_step8_directional_envelope_integration.m`
+
+Note: Step 9 uses fixed `1yr_NTM` environment (`Hm1` + NTM wind). Legacy path remains when `load_direction_mode == 2` or `enable_directional_deflection == 0`.
+
 ### Step 10 — Add auditable reporting
 
 Every completed run should record a directional summary. Suggested content:
