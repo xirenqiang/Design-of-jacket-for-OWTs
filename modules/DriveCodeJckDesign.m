@@ -667,24 +667,53 @@ fprintf('Step 8: frequency sensitivity -- finished.\n\n');
 % Wave + wind components for serviceability-style check.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('Step 9: tower-top deflection (ULS).\n');
-% Current.U_ss0=0.0;
-% Current.U_ns0=0.0;
-Wave.T=Tm1;% 1-yr extreme wave period
-Wave.h=Hm1;% 1-yr extreme wave height
-Wave.k=wave_number(Wave.T,Wave.h);% wave number
-[Ftx_1y_wav,Fty_1y_wav,Ftz_1y_wav,Mtx_1y_wav,Mtz_1y_wav,t]=Hydro_load_timehistory(t0, t1, dt, Num_bar_array,Y0_position(i));
-[Ftx_1y_wav_max,Fty_1y_wav_max,Ftz_1y_wav_max,Mtx_1y_wav_max,Mtz_1y_wav_max]=Hydro_load_max(Ftx_1y_wav,Fty_1y_wav,Ftz_1y_wav,Mtx_1y_wav,Mtz_1y_wav);
-F1_wav=Ftx_1y_wav_max;
-M1_wav=Mtz_1y_wav_max;
-a=h_total-M1_wav/F1_wav;
-delt_wave=F1_wav*h_total*(h_total-a)/K_R+F1_wav/EI_Jacket*((h_total-a)^3/3-a*(h_total-a)^2/2);
+step9Path = resolve_step9_deflection_path(cfg);
+useLegacyStep9 = strcmp(step9Path, 'legacy_step9');
+if useLegacyStep9
+    fprintf('      Step 9 deflection path: legacy_step9 (single-case).\n');
+else
+    fprintf('      Step 9 deflection path: directional envelope (%s).\n', cfg.mode_name);
+end
 sigmau_ntm=I_ref*(0.75*U_r+5.6); % std dev
 sigmau_ntmfdayu1p=sigmau_ntm*sqrt(1/(((6*Lk*f1p_max)/U_r+1)^(2/3))); % std dev above 1P
 u_ntm=1.28*sigmau_ntmfdayu1p;% NTM turbulence component
 F_ntm=air_density*Ar*Ct*(U_r+u_ntm)^2/2;% NTM thrust
-delt_wind=F_ntm*h_total^2/K_R+F_ntm*h_total^3/(3*EI_JacketTower);
-delt_towertop=delt_wind+delt_wave;
-fprintf('ULS tower-top deflection (max): %f m\n',delt_towertop);
+Num_bar_array_step9 = get_bar_array_for_floor(Num_floor, LegidPfloor, BraceidPfloor);
+Y0_step9 = Y0_position(Num_floor);
+deflectionCtx = struct( ...
+    't0', t0, ...
+    't1', t1, ...
+    'dt', dt, ...
+    'Num_bar_array', Num_bar_array_step9, ...
+    'Y0_position', Y0_step9, ...
+    'Hm1', Hm1, ...
+    'Tm1', Tm1, ...
+    'h_total', h_total, ...
+    'K_R', K_R, ...
+    'EI_Jacket', EI_Jacket, ...
+    'EI_JacketTower', EI_JacketTower, ...
+    'F_ntm', F_ntm, ...
+    'environment_case', '1yr_NTM', ...
+    'use_directional_hydro', ~useLegacyStep9);
+if useLegacyStep9
+    legacyCase = compute_towertop_deflection_case(deflectionCtx, 0, 0);
+    delt_towertop = legacyCase.delt_towertop;
+    fprintf('ULS tower-top deflection (max): %f m\n', delt_towertop);
+else
+    if ~exist('directionalScenarios', 'var') || isempty(directionalScenarios)
+        directionalScenarios = direction_scenarios(cfg);
+    end
+    fprintf('      Direction scenarios for Step 9 envelope: %d paper case(s).\n', ...
+        count_paper_direction_scenarios(directionalScenarios));
+    deflectionEnvelope = directional_deflection_envelope(deflectionCtx, directionalScenarios, cfg);
+    delt_towertop = deflectionEnvelope.max_deflection;
+    fprintf('ULS tower-top deflection envelope (max): %f m\n', delt_towertop);
+    fprintf('      Governing direction case: %s (beta_wind=%g deg, beta_wave=%g deg)\n', ...
+        deflectionEnvelope.direction_case, ...
+        deflectionEnvelope.beta_wind, ...
+        deflectionEnvelope.beta_wave);
+    fprintf('      Governing environment case: %s\n', deflectionEnvelope.environment_case);
+end
 fprintf('Step 9: tower-top deflection -- finished.\n\n');
 
 % Step 10: Export members/nodes for 3-D (local y/z, mudline z=0)
