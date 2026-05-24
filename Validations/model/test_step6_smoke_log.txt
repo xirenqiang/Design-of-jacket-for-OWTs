@@ -1,0 +1,57 @@
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: floor 1 four-leg geometry and centroid
+PASS: floor 2 geometry extraction
+PASS: invalid floor rejected
+PASS: invalid leg id rejected
+PASS: non-four-leg floor rejected
+All get_floor_leg_positions smoke tests passed.
+PASS: bottom-floor-only V4 assignment (4 floors)
+PASS: bottom-floor-only V4 assignment (3 floors)
+All Step 6 bottom-floor tension selection tests passed.
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+{¥ÌŒÛ π”√ Test_direction_mode_selection (line 25)
+directional flag expected true for auto
+} 
+exit
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: floor 1 four-leg geometry and centroid
+PASS: floor 2 geometry extraction
+PASS: invalid floor rejected
+PASS: invalid leg id rejected
+PASS: non-four-leg floor rejected
+All get_floor_leg_positions smoke tests passed.
+PASS: bottom-floor-only V4 assignment (4 floors)
+PASS: bottom-floor-only V4 assignment (3 floors)
+All Step 6 bottom-floor tension selection tests passed.
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+All direction mode selection smoke tests passed.

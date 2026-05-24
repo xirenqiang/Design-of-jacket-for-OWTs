@@ -1,0 +1,28 @@
+script,status,error
+DriveCode_1.m,PASS,
+DriveCode_250401.m,FAIL,鏃犳硶鎵撳紑鏂囦欢: C:\Users\xirenqiang\Documents\MATLAB\jacket_design_250324\inputdata.dat
+Test_coordinate.m,PASS,
+Test_current_vel.m,PASS,
+Test_intergral_mode_shape.m,PASS,
+Test_Member_Hydro.m,FAIL,输入参数太多。
+Test_Member_Hydro_sample0.m,FAIL,语法错误：第89行存在不完整表达式 dy=
+Test_Member_Hydro_sample1.m,FAIL,输入参数太多。
+Test_Member_Hydro_sample10_allbar.m,FAIL,输出参数太多。
+Test_Member_Hydro_sample11_allbar.m,FAIL,运行失败（参数/表达式错误，需进一步定位）。
+Test_Member_Hydro_sample12.m,FAIL,运行失败（参数/表达式错误，需进一步定位）。
+Test_Member_Hydro_sample2.m,PASS,
+Test_Member_Hydro_sample3.m,PASS,
+Test_Member_Hydro_sample4.m,PASS,
+Test_Member_Hydro_sample5.m,PASS,
+Test_Member_Hydro_sample6.m,PASS,
+Test_Member_Hydro_sample7.m,PASS,
+Test_Member_Hydro_sample7_modify.m,PASS,
+Test_Member_Hydro_sample7_modify2.m,PASS,
+Test_Member_Hydro_sample8.m,PASS,
+Test_Member_Hydro_sample9_allbar.m,PASS,
+Test_Member_Hydro_test1.m,FAIL,输入参数太多。
+Test_Member_Hydro_test2.m,FAIL,输入参数太多。
+Test_Member_Hydro_test3.m,FAIL,输入参数太多。
+Test_Member_Hydro_test4.m,FAIL,输入参数太多。
+Test_Vel_fluid.m,PASS,
+Test_y_coordinate.m,FAIL,未定义变量 'Member' 或类 'Member.Xt'。

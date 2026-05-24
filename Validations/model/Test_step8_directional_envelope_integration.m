@@ -1,0 +1,133 @@
+% Step 8 integration tests: directional envelope wiring and mode split.
+thisFileDir = fileparts(mfilename('fullpath'));
+projectRoot = fileparts(fileparts(thisFileDir));
+addpath(fullfile(projectRoot, 'modules'));
+
+cfgAuto = build_design_config(struct('load_direction_mode', 1));
+cfgSingle = build_design_config(struct('load_direction_mode', 0, 'beta_wind', 10, 'beta_wave', 20));
+cfgLegacy = build_design_config(struct('load_direction_mode', 2));
+
+%% Floor loop bounds (3-floor jacket must not include floor 4)
+floorIds3 = step5_floor_indices(3);
+floorIds4 = step5_floor_indices(4);
+assert(isequal(floorIds3, [1, 2, 3]), '3-floor indices mismatch');
+assert(isequal(floorIds4, [1, 2, 3, 4]), '4-floor indices mismatch');
+assert(~any(floorIds3 == 4), '3-floor loop must not include floor 4');
+fprintf('PASS: step5_floor_indices bounds for Num_floor=3/4\n');
+
+try
+    step5_floor_indices(5);
+    error('Expected InvalidNumFloors for numFloors=5.');
+catch ME
+    assert(strcmp(ME.identifier, 'step5_floor_indices:InvalidNumFloors'), ...
+        'Unexpected error: %s', ME.message);
+end
+fprintf('PASS: step5_floor_indices rejects invalid Num_floor\n');
+
+%% Mode path dispatch
+assert(strcmp(resolve_step5_uls_path(cfgAuto), 'directional_envelope'), ...
+    'auto_envelope should use directional path');
+assert(strcmp(resolve_step5_uls_path(cfgSingle), 'directional_envelope'), ...
+    'single_direction should use directional path');
+assert(strcmp(resolve_step5_uls_path(cfgLegacy), 'legacy_pesai'), ...
+    'legacy_pesai should use legacy path');
+fprintf('PASS: resolve_step5_uls_path mode split\n');
+
+scAuto = direction_scenarios(cfgAuto);
+scSingle = direction_scenarios(cfgSingle);
+scLegacy = direction_scenarios(cfgLegacy);
+assert(numel(scAuto) == 4, 'auto_envelope should return 4 scenarios');
+assert(numel(scSingle) == 1, 'single_direction should return 1 scenario');
+assert(count_paper_direction_scenarios(scAuto) == 4, 'auto should have 4 paper scenarios');
+assert(count_paper_direction_scenarios(scSingle) == 1, 'single should have 1 paper scenario');
+assert(count_paper_direction_scenarios(scLegacy) == 0, 'legacy should have 0 paper scenarios');
+fprintf('PASS: direction_scenarios counts for Step 8 modes\n');
+
+minimalFloorCtx = struct( ...
+    'floor_id', 1, ...
+    'Num_bar_array', 1, ...
+    'Y0_position', 0, ...
+    'Width_i', 10, ...
+    'Wnet', 1e6, ...
+    'legGeom', struct('leg_ids', [1 2 3 4], 'x', [1 1 -1 -1], 'z', [1 -1 -1 1], 'center_x', 0, 'center_z', 0), ...
+    'sitah', 0.5, ...
+    'brace_ids', 5, ...
+    'F_allowable_leg', 1e7, ...
+    'F_allowable_brace', 1e7, ...
+    'D_leg', 1.0, ...
+    't_leg', 0.04, ...
+    'D_brace', 0.6, ...
+    't_brace', 0.02, ...
+    't0', 0, ...
+    't1', 0.1, ...
+    'dt', 0.1, ...
+    'F_etm', 1e5, ...
+    'M_etm', 1e6, ...
+    'F_eog', 1e5, ...
+    'M_eog', 1e6, ...
+    'F_ewm_50', 1e5, ...
+    'M_ewm_50', 1e6, ...
+    'F_ewm_1', 1e5, ...
+    'M_ewm_1', 1e6, ...
+    'Hm2', 1, ...
+    'Tm2', 10, ...
+    'DAF2', 1, ...
+    'Hm50', 2, ...
+    'Tm50', 12, ...
+    'DAF50', 1, ...
+    'Hm1', 0.8, ...
+    'Tm1', 9, ...
+    'DAF1', 1);
+try
+    uls_floor_envelope(minimalFloorCtx, scLegacy, [], cfgAuto);
+    error('Expected error when calling uls_floor_envelope with legacy-only scenarios.');
+catch ME
+    assert(strcmp(ME.identifier, 'uls_floor_envelope:NoPaperScenarios'), ...
+        'Unexpected error: %s', ME.message);
+end
+fprintf('PASS: legacy scenarios excluded from uls_floor_envelope\n');
+
+%% Hydro cache key stability
+floorCtx = struct('floor_id', 2, 'D_leg', 1.1, 't_leg', 0.05, 'D_brace', 0.7, 't_brace', 0.02);
+key1 = build_hydro_cache_key(floorCtx, 'Hm2', 45);
+key2 = build_hydro_cache_key(floorCtx, 'Hm2', 45);
+key3 = build_hydro_cache_key(floorCtx, 'Hm50', 45);
+assert(strcmp(key1, key2), 'Equivalent inputs must produce identical cache keys');
+assert(~strcmp(key1, key3), 'Different sea states must produce different cache keys');
+fprintf('PASS: build_hydro_cache_key stability and separation\n');
+
+%% Cache hit behavior (same key within one envelope pass)
+floorCtxCache = struct('floor_id', 1, 'D_leg', 1.0, 't_leg', 0.04, 'D_brace', 0.6, 't_brace', 0.02);
+cache = struct('keys', {{}}, 'values', {{}});
+stats = struct('hits', 0, 'misses', 0, 'evaluations', 0);
+keyA = build_hydro_cache_key(floorCtxCache, 'Hm2', 45);
+[cache, stats] = touchHydroCache(cache, keyA, stats, struct('F', 1, 'M', 2));
+[cache, stats] = touchHydroCache(cache, keyA, stats, struct('F', 1, 'M', 2));
+assert(stats.hits > 0, 'Expected cache hit on repeated hydro key');
+assert(stats.misses == 1, 'Expected one cache miss for first key touch');
+assert(stats.evaluations == 2, 'Expected two cache evaluations');
+fprintf('PASS: hydro cache hit on repeated key\n');
+
+%% Increment resize behavior (paper modes use cfg.delta_*)
+cfgResize = build_design_config(struct());
+[D_leg, t_leg, D_brace, t_brace, resized] = resize_member_sections( ...
+    0.9, 0.04, 0.5, 0.02, struct('leg_exceeds', true, 'brace_exceeds', true), cfgResize);
+assert(resized, 'Expected resize true');
+assert(abs(D_leg - (0.9 + cfgResize.delta_D_leg)) < 1e-12, 'D_leg must use delta increment');
+assert(abs(D_brace - (0.5 + cfgResize.delta_D_brace)) < 1e-12, 'D_brace must use delta increment');
+assert(D_leg ~= 1.2 && D_brace ~= 0.6, 'Paper-mode resize must not hard-reset to 1.2/0.6');
+fprintf('PASS: resize_member_sections uses configured deltas\n');
+
+fprintf('All Step 8 directional envelope integration tests passed.\n');
+
+function [cache, stats] = touchHydroCache(cache, key, stats, value)
+idx = find(strcmp(cache.keys, key), 1);
+stats.evaluations = stats.evaluations + 1;
+if ~isempty(idx)
+    stats.hits = stats.hits + 1;
+else
+    stats.misses = stats.misses + 1;
+    cache.keys{end + 1} = key;
+    cache.values{end + 1} = value;
+end
+end

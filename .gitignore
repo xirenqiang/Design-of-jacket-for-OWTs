@@ -1,0 +1,17 @@
+# MATLAB editor backups
+*.asv
+*.autosave
+
+# Local runtime output (regenerated each run)
+Validations/model/session_output.txt
+
+# Compiler build artifacts
+build/
+
+# Local backup copies (not source of truth)
+Backup/
+
+# OS / IDE noise
+.DS_Store
+Thumbs.db
+*.swp

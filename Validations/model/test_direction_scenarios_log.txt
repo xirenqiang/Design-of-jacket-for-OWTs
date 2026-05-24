@@ -1,0 +1,6 @@
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.

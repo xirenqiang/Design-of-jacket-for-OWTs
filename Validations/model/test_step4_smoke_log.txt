@@ -1,0 +1,58 @@
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.
+PASS: wave_phase_x_eff hand checks
+PASS: Vel_fluid_particle beta=0 matches legacy formula
+ERROR: 错误使用 ACC_fluid_particle (line 6)
+Expected at least (TT,h,k,S,x,y,t).
+
+出错 Test_wave_angle_kinematics (line 30)
+[ax0, ay0] = ACC_fluid_particle(TT, h, k, S, x, y, t);
+
+出错 run (line 91)
+evalin('caller', strcat(script, ';'));
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.
+PASS: wave_phase_x_eff hand checks
+PASS: Vel_fluid_particle beta=0 matches legacy formula
+PASS: ACC_fluid_particle beta=0 matches legacy formula
+PASS: surface_elevation beta=0 matches legacy formula
+PASS: Vel_fluid_particle beta=90 sanity
+PASS: resolve_wave_beta_propagation global fallback
+PASS: hydro_load_directional_max beta=0 matches legacy chain
+All wave angle kinematics smoke tests passed.

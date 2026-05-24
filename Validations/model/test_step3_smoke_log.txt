@@ -1,0 +1,40 @@
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.

@@ -1,0 +1,5 @@
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.

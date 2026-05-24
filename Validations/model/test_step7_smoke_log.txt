@@ -1,0 +1,25 @@
+PASS: Eq.52 numeric consistency (Fx-only)
+PASS: Eq.52 numeric consistency (Fx+Fy)
+PASS: InvalidBraceAngle at cos(sitah) ~ 0
+PASS: brace demand stable and pesai-independent (no pesai in API)
+PASS: legacy vs paper formula separation confirmed
+All Step 7 brace demand tests passed.
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+All direction mode selection smoke tests passed.

@@ -1,0 +1,42 @@
+PASS: step5_floor_indices bounds for Num_floor=3/4
+PASS: step5_floor_indices rejects invalid Num_floor
+PASS: resolve_step5_uls_path mode split
+PASS: direction_scenarios counts for Step 8 modes
+{¥ÌŒÛ π”√ Test_step8_directional_envelope_integration (line 50)
+Unexpected error: floorCtx must contain 'floor_id'.
+} 
+exit
+PASS: step5_floor_indices bounds for Num_floor=3/4
+PASS: step5_floor_indices rejects invalid Num_floor
+PASS: resolve_step5_uls_path mode split
+PASS: direction_scenarios counts for Step 8 modes
+PASS: legacy scenarios excluded from uls_floor_envelope
+PASS: build_hydro_cache_key stability and separation
+PASS: hydro cache hit on repeated key
+PASS: resize_member_sections uses configured deltas
+All Step 8 directional envelope integration tests passed.
+PASS: Eq.52 numeric consistency (Fx-only)
+PASS: Eq.52 numeric consistency (Fx+Fy)
+PASS: InvalidBraceAngle at cos(sitah) ~ 0
+PASS: brace demand stable and pesai-independent (no pesai in API)
+PASS: legacy vs paper formula separation confirmed
+All Step 7 brace demand tests passed.
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+All direction_scenarios smoke tests passed.
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+All direction mode selection smoke tests passed.

@@ -1,0 +1,50 @@
+This is the input file for py curve
+11.75		k_weibull			        #Weibull scale parameter
+2.04			s_weibull			        #Weibull shape parameter 
+6.9			n_min				#The minimum speed at which the wind turbine operates
+12.1			n_max				#The maximum speed at which the wind turbine operates
+350000		M_rna				#The total mass of the wind turbine engine compartment combination
+4			D_Tower_top		        #Tower top diameter
+5.6			D_Tower_bottom		#Tower bottom diameter
+261100		m_t					#Total mass of tower
+70			h_Tower				#The height of the tower, in meters
+2.42		av					#The inclination angle of the main limb of the jacket, in degrees
+4			Num_floor			#Number of layers in the jacket
+4                      Num_pile                          #多桩导管架桩数
+8			L_top				#Platform width on the jacket
+50			water_depth			#Water depth
+8.24		Hs50				        #50 year characteristic wave height
+15.33		Hm50				#50 year extreme wave height
+7850		steel_density			#The density of the tower
+2.1e11		E					#Young's modulus of tower material
+666000		Mtp                                  #转换平台质量
+11.4                  U_r                                   #轮毂高度处平均风速
+12469               Ar                                     #叶片扫掠面积
+1.225                air_density                        #空气密度
+340.2                Lk                                     #积分长度尺度
+0.18                  I_ref                                  #Iref为U_r=11.4 m/s时的参考湍流强度
+42                    Lambda                             #湍流尺度参数
+50                    U_ref                                 #1级风机的10分钟参考平均风速
+90                  z_hub                                #风机轮毂高度，此前该数值为137，是错误的
+0.5                   Ct1                                    #风机停机时推力系数
+1.07                 Hs2                                   #用户输入eog模式波高，这里暂定为10
+1025                density                              #海水密度
+1.0                   cd                                     #阻力系数
+2.0                   cm                                    #惯性系数
+50                    S                                      #水深
+0.6                   U_ss0                                #待补充
+1.2                   U_ns0                                #待补充
+20                    h_ref                                 #待补充
+50                    L_pile                                 #待补充               
+10.0e3             wgh_soil                              #待补充
+95.7e3             fs_limit                                #待补充
+1                      load_direction_mode          #0=single_direction, 1=auto_envelope, 2=legacy_pesai
+0                      psi_site                     #Jacket installation azimuth for paper modes, deg
+0                      beta_wind                    #single_direction wind direction, deg
+45                     beta_wave                    #single_direction wave/current direction, deg
+45                     pesai_legacy                 #legacy_pesai structure-wave relative angle, deg
+1                      enable_directional_deflection #1=directional Step 9 envelope
+0.10                   delta_D_leg                  #Leg OD increment during ULS iteration, m
+0.005                  delta_t_leg                  #Leg wall thickness increment, m
+0.06                   delta_D_brace                #Brace OD increment during ULS iteration, m
+0.01                   delta_t_brace                #Brace wall thickness increment, m
