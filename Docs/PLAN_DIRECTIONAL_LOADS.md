@@ -703,9 +703,11 @@ When `enable_directional_deflection = 1`:
 - `modules/select_governing_deflection.m` — envelope maximum selection helper
 - `modules/resolve_step9_deflection_path.m` — Step 9 mode dispatch (`legacy_step9` vs `directional_envelope`)
 - `modules/DriveCodeJckDesign.m` — Step 9 mode gating via `enable_directional_deflection`; bottom-floor hydro reference (`Num_floor`); audit logs for governing direction
-- `Validations/model/Test_directional_deflection_envelope.m` — envelope selection, legacy isolation, output fields, beta=0 parity (all PASS)
+- `Validations/model/Test_directional_deflection_envelope.m` — envelope selection, legacy isolation, output fields, beta=0 parity, auto_envelope D1-D4 integration (all PASS)
 - `Validations/model/Test_step9_mode_gating.m` — Step 9 path gating and cfg validation (all PASS)
-- Regression updates: `Test_direction_mode_selection.m`, `Test_step8_directional_envelope_integration.m`
+- `Validations/model/Run_step9_smoke_tests.m` — Step 9 smoke runner (writes `test_step9_smoke_log.txt`)
+- `Validations/model/test_step9_smoke_log.txt` — Step 9 + directional regression log
+- Regression updates: `Test_direction_scenarios.m` (Step 9 scenario/path cross-check), `Test_direction_mode_selection.m`, `Test_step8_directional_envelope_integration.m`
 
 Note: Step 9 uses fixed `1yr_NTM` environment (`Hm1` + NTM wind). Legacy path remains when `load_direction_mode == 2` or `enable_directional_deflection == 0`.
 

@@ -51,6 +51,23 @@ catch ME
     fprintf('PASS: missing cfg field rejected\n');
 end
 
+%% Step 9 cross-check: auto scenarios feed directional deflection envelope
+cfgAutoStep9 = build_design_config(struct('load_direction_mode', 1));
+scenariosStep9 = direction_scenarios(cfgAutoStep9);
+assert(count_paper_direction_scenarios(scenariosStep9) == 4, ...
+    'Step 9 auto_envelope must expose 4 paper scenarios');
+assert(strcmp(resolve_step9_deflection_path(cfgAutoStep9), 'directional_envelope'), ...
+    'Step 9 auto_envelope must use directional envelope path');
+fprintf('PASS: Step 9 auto_envelope scenario/path cross-check\n');
+
+cfgLegacyStep9 = build_design_config(struct('load_direction_mode', 2));
+scenariosLegacyStep9 = direction_scenarios(cfgLegacyStep9);
+assert(count_paper_direction_scenarios(scenariosLegacyStep9) == 0, ...
+    'Step 9 legacy_pesai must expose 0 paper scenarios');
+assert(strcmp(resolve_step9_deflection_path(cfgLegacyStep9), 'legacy_step9'), ...
+    'Step 9 legacy_pesai must stay on legacy path');
+fprintf('PASS: Step 9 legacy_pesai scenario/path cross-check\n');
+
 fprintf('All direction_scenarios smoke tests passed.\n');
 
 function assert_scenario_fields(scenarios, requiredFields)

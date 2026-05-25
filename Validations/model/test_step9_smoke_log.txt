@@ -1,0 +1,46 @@
+Step 9 smoke test run started: 25-May-2026 11:26:59
+
+--- Running Test_directional_deflection_envelope.m ---
+PASS: select_governing_deflection picks maximum deflection
+PASS: select_governing_deflection rejects empty input
+PASS: legacy scenarios excluded from directional_deflection_envelope
+PASS: directional_deflection_envelope output fields and single scenario
+PASS: directional_deflection_envelope auto_envelope D1-D4 integration
+PASS: compute_towertop_deflection_case legacy/directional beta=0 parity
+All Step 9 directional deflection envelope tests passed.
+
+--- Running Test_step9_mode_gating.m ---
+PASS: resolve_step9_deflection_path mode gating
+PASS: Step 5 and Step 9 path dispatch consistency
+PASS: resolve_step9_deflection_path validates cfg fields
+All Step 9 mode gating tests passed.
+
+--- Running Test_direction_scenarios.m ---
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+PASS: Step 9 auto_envelope scenario/path cross-check
+PASS: Step 9 legacy_pesai scenario/path cross-check
+All direction_scenarios smoke tests passed.
+
+--- Running Test_direction_mode_selection.m ---
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+PASS: resolve_step9_deflection_path gating
+All direction mode selection smoke tests passed.
+
+--- Running Test_step8_directional_envelope_integration.m ---
+PASS: step5_floor_indices bounds for Num_floor=3/4
+PASS: step5_floor_indices rejects invalid Num_floor
+PASS: resolve_step5_uls_path mode split
+PASS: direction_scenarios counts for Step 8 modes
+PASS: legacy scenarios excluded from uls_floor_envelope
+PASS: build_hydro_cache_key stability and separation
+PASS: hydro cache hit on repeated key
+PASS: resize_member_sections uses configured deltas
+PASS: resolve_step9_deflection_path mode split
+All Step 8 directional envelope integration tests passed.
+
+Step 9 smoke test run finished: all tests passed.

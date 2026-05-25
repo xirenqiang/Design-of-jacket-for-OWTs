@@ -98,6 +98,35 @@ assert(strcmp(envelopeSingle.direction_case, 'SINGLE'), 'Expected SINGLE governi
 assert(envelopeSingle.scenarios_evaluated == 1, 'Expected one scenario evaluated');
 fprintf('PASS: directional_deflection_envelope output fields and single scenario\n');
 
+%% auto_envelope D1-D4 integration (4 paper scenarios)
+deflectionCtx.use_directional_hydro = true;
+envelopeAuto = directional_deflection_envelope(deflectionCtx, scAuto, cfgAuto);
+assert(envelopeAuto.scenarios_evaluated == 4, ...
+    'auto_envelope must evaluate 4 paper scenarios');
+assert(envelopeAuto.num_cases_evaluated == 4, ...
+    'auto_envelope must record 4 evaluated cases');
+assert(isfinite(envelopeAuto.max_deflection) && envelopeAuto.max_deflection >= 0, ...
+    'auto_envelope max_deflection must be finite and non-negative');
+assert(any(strcmp(envelopeAuto.direction_case, {'D1', 'D2', 'D3', 'D4'})), ...
+    'governing direction_case must be one of D1-D4');
+matchedScenario = scAuto(strcmp({scAuto.id}, envelopeAuto.direction_case));
+assert(~isempty(matchedScenario), 'governing case must match an auto scenario id');
+assert(envelopeAuto.beta_wind == matchedScenario.beta_wind, ...
+    'governing beta_wind must match scenario metadata');
+assert(envelopeAuto.beta_wave == matchedScenario.beta_wave, ...
+    'governing beta_wave must match scenario metadata');
+assert(strcmp(envelopeAuto.environment_case, '1yr_NTM'), ...
+    'auto_envelope environment_case must be 1yr_NTM');
+perCaseDeflection = zeros(1, numel(scAuto));
+for i = 1:numel(scAuto)
+    caseOut = compute_towertop_deflection_case(deflectionCtx, ...
+        scAuto(i).beta_wind, scAuto(i).beta_wave);
+    perCaseDeflection(i) = caseOut.delt_towertop;
+end
+assert(abs(envelopeAuto.max_deflection - max(perCaseDeflection)) < 1e-9, ...
+    'auto_envelope max_deflection must equal per-case maximum');
+fprintf('PASS: directional_deflection_envelope auto_envelope D1-D4 integration\n');
+
 %% Legacy vs directional hydro flag on compute_towertop_deflection_case
 deflectionCtxLegacy = deflectionCtx;
 deflectionCtxLegacy.use_directional_hydro = false;
@@ -115,11 +144,25 @@ fprintf('All Step 9 directional deflection envelope tests passed.\n');
 
 function setupMinimalHydroFixture()
 global Member Hydro Wave Current Discrete debug dL_ele_target;
-Member = struct('L', 10, 'D', 1.0, 't', 0.04);
-Hydro = struct('Cd', 1.0, 'Cm', 2.0);
-Wave = struct('beta_propagation', 0);
-Current = struct('U_ss0', 0, 'U_ns0', 0);
-Discrete = struct('Num_ele', 1, 'L_ele', {10});
+
 debug = 0;
 dL_ele_target = 3.0;
+Hydro = struct('density', 1025, 'cd', 1.0, 'cm', 2.0);
+Wave = struct('S', 50, 'T', 12, 'h', 2, 'k', 0.05, 'beta_propagation', 0);
+Current = struct('U_ss0', 0, 'U_ns0', 0, 'h_ref', 20);
+
+Member.X0(1) = 6;
+Member.Y0(1) = 0;
+Member.Z0(1) = 6;
+Member.Xt(1) = 4;
+Member.Yt(1) = 20;
+Member.Zt(1) = 4;
+Member.D(1) = 1.0;
+Member.t(1) = 0.05;
+Member.L(1) = sqrt(sum(([Member.Xt(1), Member.Yt(1), Member.Zt(1)] - [Member.X0(1), Member.Y0(1), Member.Z0(1)]).^2));
+Member.fai_y(1) = atand(sqrt((Member.Xt(1)-Member.X0(1))^2 + (Member.Zt(1)-Member.Z0(1))^2) / abs(Member.Yt(1)-Member.Y0(1)));
+Member.cita_x(1) = atand((Member.Zt(1)-Member.Z0(1)) / (Member.Xt(1)-Member.X0(1)));
+[Member.cx(1), Member.cy(1), Member.cz(1)] = Direction_bar(Member.fai_y(1), Member.cita_x(1));
+Discrete.Num_ele(1) = 4;
+Discrete.dL(1) = Member.L(1) / Discrete.Num_ele(1);
 end
