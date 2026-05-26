@@ -1,0 +1,70 @@
+Step 10 smoke test run started: 26-May-2026 08:01:47
+
+--- Running Test_build_directional_summary.m ---
+PASS: build_directional_summary selects governing ULS floor
+PASS: build_directional_summary attaches deflection block
+PASS: build_directional_summary legacy branch
+PASS: build_directional_summary rejects empty ulsRecords
+All build_directional_summary tests passed.
+
+--- Running Test_write_directional_summary.m ---
+=== Directional Load Summary ===
+mode = auto_envelope
+governing_direction_case = D4
+beta_wind = 45 deg
+beta_wave = 45 deg
+governing_environment_case = EWM_50+Hm50
+governing_floor = 3
+governing_member_type = brace
+governing_member_id = 12
+demand = 1.5e+06
+capacity = 1.2e+06
+=== Directional Deflection Summary ===
+governing_direction_case = D2
+beta_wind = 0 deg
+beta_wave = 90 deg
+governing_environment_case = 1yr_NTM
+governing_member_type = deflection
+max_deflection = 0.35 m
+PASS: write_directional_summary paper dual-section format
+=== Directional Load Summary (Legacy) ===
+mode = legacy_pesai
+pesai_legacy = 45 deg
+calculation = old scalar formulation
+purpose = regression comparison only
+PASS: write_directional_summary legacy format
+PASS: write_directional_summary validates required fields
+All write_directional_summary tests passed.
+
+--- Running Test_directional_deflection_envelope.m ---
+PASS: select_governing_deflection picks maximum deflection
+PASS: select_governing_deflection rejects empty input
+PASS: legacy scenarios excluded from directional_deflection_envelope
+PASS: directional_deflection_envelope output fields and single scenario
+PASS: directional_deflection_envelope auto_envelope D1-D4 integration
+PASS: compute_towertop_deflection_case legacy/directional beta=0 parity
+All Step 9 directional deflection envelope tests passed.
+
+--- Running Test_step9_mode_gating.m ---
+PASS: resolve_step9_deflection_path mode gating
+PASS: Step 5 and Step 9 path dispatch consistency
+PASS: resolve_step9_deflection_path validates cfg fields
+All Step 9 mode gating tests passed.
+
+--- Running Test_direction_scenarios.m ---
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+PASS: Step 9 auto_envelope scenario/path cross-check
+PASS: Step 9 legacy_pesai scenario/path cross-check
+All direction_scenarios smoke tests passed.
+
+--- Running Test_direction_mode_selection.m ---
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+PASS: resolve_step9_deflection_path gating
+All direction mode selection smoke tests passed.
+
+Step 10 smoke test run finished: all tests passed.
