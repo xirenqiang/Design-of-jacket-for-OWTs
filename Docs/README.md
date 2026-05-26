@@ -11,7 +11,7 @@ Offshore wind jacket preliminary design — project documentation set.
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Developer | System layers, globals, module map, deployment |
 | [DESIGN.md](DESIGN.md) | Developer / engineer | Step-by-step algorithms, formulas, API contracts |
 | [THEORY_REFERENCE.md](THEORY_REFERENCE.md) | Engineer / researcher | SCI paper citation, equation mapping, standards |
-| [PLAN_DIRECTIONAL_LOADS.md](PLAN_DIRECTIONAL_LOADS.md) | Maintainer | Approved hybrid plan for §2.5 directional ULS (not yet implemented) |
+| [PLAN_DIRECTIONAL_LOADS.md](PLAN_DIRECTIONAL_LOADS.md) | Maintainer | Approved hybrid plan for §2.5 directional ULS (**implemented** on `main`) |
 
 ## Theory basis (SCI paper)
 

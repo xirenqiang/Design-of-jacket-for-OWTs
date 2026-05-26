@@ -1,7 +1,7 @@
 # Code Review and Audit Report
 
 > **Document basis:** Static review of source code, validation matrix, and cross-script consistency.  
-> **Review date:** 2026-05-21  
+> **Review date:** 2026-05-26 (validation matrix refresh)  
 > **Scope:** `modules/`, `Validations/`, `tools/`, build artifacts  
 > **Related:** [REQUIREMENTS.md](REQUIREMENTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [DESIGN.md](DESIGN.md)
 
@@ -13,8 +13,8 @@
 |--------|------------|
 | **Overall** | Functional preliminary design pipeline with clear 10-step workflow |
 | **Strengths** | Modular hydro/geometry functions; documented export formats; validation harness exists |
-| **Weaknesses** | Global state, hardcoded constants, validation drift (13/27 FAIL), legacy script divergence |
-| **Production readiness** | Suitable for **engineering study** only — not audit-ready for certified design without remediation |
+| **Weaknesses** | Global state, hardcoded constants (`Gs`, `Ct1`), legacy validation drift (13/44 FAIL) |
+| **Production readiness** | Suitable for **engineering study** — directional ULS implemented; legacy hydro regression scripts need repair |
 
 ---
 
@@ -35,7 +35,7 @@
 
 | ID | Finding | Location | Impact | Recommendation |
 |----|---------|----------|--------|----------------|
-| C-01 | **ULS resize assigns fixed absolute sizes** (`D_leg=1.2`, `D_brace=0.6`) instead of incrementing from current — overwrites user Step-3 input on first iteration | `DriveCodeJckDesign.m` L424–456 | Incorrect member sizes; non-physical jumps | Change to incremental update (e.g. `D_leg = D_leg + 0.1`) as commented-out code suggests |
+| C-01 | **ULS resize assigns fixed absolute sizes** in **`legacy_pesai`** branch only | `DriveCodeJckDesign.m` legacy Step 5 | Paper modes use incremental `resize_member_sections` | **Partially resolved** — verify legacy branch if still needed |
 | C-02 | **`Ct1` in input file ignored**; hardcoded `0.052` used for EWM | L213–215 | Input deck does not control EWM thrust | Read from `dataStruct.Ct1` or remove from input schema |
 | C-03 | **`Num_pile=3` rejected** by `set_leg_ID_per_floor` despite `Bar_num_determine` allowing 3 | `set_leg_ID_per_floor.m` L17–19 | 3-pile configuration cannot run | Align validation across modules or document 4-pile only |
 
@@ -44,12 +44,12 @@
 | ID | Finding | Location | Impact | Recommendation |
 |----|---------|----------|--------|----------------|
 | M-01 | **Geometry formula divergence** between driver and validation: driver uses `L_bottom = L_top + √2·h·tan(av)`; `DriveCode_1.m` uses `L_top + 2·h·tan(av)` | Driver L94 vs `DriveCode_1.m` L57 | Regression script does not validate current production logic | Update `DriveCode_1.m` or split shared geometry function |
-| M-02 | **Step 5 always loops 4 floors** regardless of `Num_floor=3` | L275 `for i=1:4` | 3-bay designs run spurious fourth floor checks | Loop to `Num_floor` or map floor indices |
+| M-02 | **Step 5 floor loop** | `step5_floor_indices` | **Resolved** in paper modes; legacy branch uses same helper |
 | M-03 | **Heavy global state** — 47 functions depend on implicit `Member`, `Wave`, etc. | Throughout `modules/` | Untestable in isolation; order-dependent | Introduce context struct; reduce globals |
-| M-04 | **13 of 27 validation scripts FAIL** | `validation_pass_fail_matrix.csv` | Low confidence in module regression | Fix API drift; automate test runner |
+| M-04 | **13 of 44 validation scripts FAIL** | `validation_pass_fail_matrix.csv` | Legacy hydro API drift; encoding-damaged scripts | **`Run_validation_matrix.m` automated**; repair or quarantine failing legacy scripts |
 | M-05 | **`sigma_allowable` uses fixed E=210 GPa** while input allows `E=2.1e11` — potential inconsistency if E changed | `sigma_allowable.m` L5 | Capacity error if material E differs | Pass `E` as parameter |
 | M-06 | **`DriveCode_250401.m` FAIL** — hardcoded path to obsolete project | Validation matrix | Misleading if used as regression | Archive or fix paths |
-| M-07 | **`pesai=45` hardcoded** — input file has no azimuth field | Driver L236 | Parametric studies require code edit | Add to input file |
+| M-07 | **`pesai` input** — paper modes use `psi_site`/`beta_*`; legacy uses `pesai_legacy` from input | `build_design_config.m` | **Resolved** for paper modes; legacy regression isolated |
 | M-08 | **`Gs=15e6` hardcoded** — soil stiffness not from input | Driver L545 | Frequency results not site-configurable | Add `Gs` to input or derive from soil params |
 
 ### 3.3 Minor
@@ -60,7 +60,7 @@
 | m-02 | Mixed Chinese/English comments; some `.m` files have encoding-corrupted headers | e.g. `Hydro_load_timehistory.m` | Maintainer readability | Normalize UTF-8; run sanitize script |
 | m-03 | `.asv` autosave files in `modules/` | `*.asv` | Clutter; accidental confusion | Add to `.gitignore`; delete |
 | m-04 | `debug` global never set by driver | Various modules | Validation branches inactive in production runs | Set `debug=0` explicitly or remove dead branches |
-| m-05 | Step 9 reuses loop variable `i=4` from Step 5 | L592 | Fragile if Step 5 loop changes | Store explicit last-floor indices |
+| m-05 | Step 9 loop index | Step 9 modules | **Improved** — `directional_deflection_envelope` decoupled from Step 5 loop variable |
 | m-06 | `readData` error message incomplete | `readData.m` L9 | `'Input file not found: %s'` missing text | Fix error format string |
 | m-07 | Empirical `MTower = h_Tower*3730` vs input `m_t` | Driver L76 | Inconsistent weight in ULS | Derive from `m_t` or document assumption |
 
@@ -82,16 +82,21 @@
 
 | Status | Count |
 |--------|-------|
-| PASS | 14 |
+| PASS | 31 |
 | FAIL | 13 |
-| **Total** | **27** |
+| **Total** | **44** |
+
+Regenerate: `addpath('Validations'); Run_validation_matrix;`  
+Log: `Validations/model/test_step12_validation_matrix_log.txt`
+
+Directional suite (separate matrix): `Validations/directional_validation_pass_fail_matrix.csv` — all minimum Step 11 tests PASS.
 
 ### 4.2 Integrated tests (`Validations/model`)
 
 | Script | Status | Root cause |
 |--------|--------|------------|
-| `DriveCode_1.m` | PASS | Hardcoded params; **geometry formulas differ from current driver** (see M-01) — PASS may not guard production code |
-| `DriveCode_250401.m` | FAIL | Missing file at old absolute path |
+| `DriveCode_1.m` | FAIL | Encoding/syntax (`m_unterminated_string`); geometry formulas differ from current driver (M-01) |
+| `DriveCode_250401.m` | FAIL | Encoding/syntax; obsolete external path reference |
 
 ### 4.3 Module tests (`Validations/modulus`)
 
@@ -99,7 +104,7 @@
 |----------|------|------|
 | Coordinate / current / velocity | 4 | 1 (`Test_y_coordinate.m` — undefined `Member`) |
 | Mode shape | 1 | 0 |
-| Member hydro series | 9 | 12 |
+| Member hydro series | 14 | 8 |
 
 **Common hydro test failures:** "too many input arguments" / "too many output arguments" — indicates **function signatures changed** since tests were written.
 
@@ -107,7 +112,7 @@
 
 1. **Priority 1:** Fix `DriveCode_1.m` to call `DriveCodeJckDesign` or shared step functions — single source of truth.
 2. **Priority 2:** Update failing `Test_Member_Hydro_*` call signatures to match `Hydro_member1.m`.
-3. **Priority 3:** Add CI script: `matlab -batch "run_all_validations"` updating CSV.
+3. **Priority 3:** ~~Automate validation matrix generation~~ — **`Run_validation_matrix.m`** (Step 12).
 4. **Priority 4:** Remove or quarantine FAIL scripts that are obsolete.
 
 ---
@@ -131,8 +136,8 @@
 | Modularity | Medium | Good module split; poor driver coupling |
 | Cohesion | Medium | Hydro cluster cohesive; ULS logic embedded in driver |
 | Coupling | High | Globals + inline formulas |
-| Testability | Low | Globals; 48% validation fail rate |
-| Documentation | Good | SCI paper linked; THEORY_REFERENCE maps equations to code |
+| Testability | Medium | Directional modules have dedicated tests; globals remain in legacy path |
+| Documentation | Good | SCI paper linked; PLAN Steps 1–12 complete; user docs updated |
 | Maintainability | Medium | Clear step labels help navigation |
 
 ---
@@ -155,16 +160,16 @@
 
 ### Phase 1 — Correctness (1–2 weeks)
 
-- [ ] Fix C-01 resize logic (incremental D/t)
+- [x] Fix C-01 resize logic (incremental D/t) — paper modes via `resize_member_sections.m`
 - [ ] Fix C-02 read `Ct1` from input
-- [ ] Resolve C-03 / M-02 pile count and floor loop
+- [x] Resolve M-02 floor loop — `step5_floor_indices`
 - [ ] Align M-01 `DriveCode_1.m` with production geometry
 
 ### Phase 2 — Test hygiene (1–2 weeks)
 
-- [ ] Repair 12 failing hydro tests (signatures)
+- [ ] Repair failing legacy hydro tests (signatures)
 - [ ] Fix `Test_y_coordinate.m` setup (initialize `Member`)
-- [ ] Automate validation matrix generation
+- [x] Automate validation matrix generation — `Run_validation_matrix.m`
 
 ### Phase 3 — Architecture (ongoing)
 
@@ -193,4 +198,5 @@
 
 | Date | Reviewer | Change |
 |------|----------|--------|
+| 2026-05-26 | Step 12 audit | Validation matrix 31/44 PASS; directional docs; M-02/M-07/C-01 partial fixes noted |
 | 2026-05-21 | Code-derived audit | Initial audit document from codebase analysis |

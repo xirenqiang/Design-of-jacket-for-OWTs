@@ -1,0 +1,275 @@
+Validation matrix refresh started: 26-May-2026 08:38:35
+
+--- Running model/Test_build_design_config.m ---
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: model/Test_build_design_config.m
+
+--- Running model/Test_build_directional_summary.m ---
+PASS: build_directional_summary selects governing ULS floor
+PASS: build_directional_summary attaches deflection block
+PASS: build_directional_summary legacy branch
+PASS: build_directional_summary rejects empty ulsRecords
+All build_directional_summary tests passed.
+PASS: model/Test_build_directional_summary.m
+
+--- Running model/Test_combine_plan_loads.m ---
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: model/Test_combine_plan_loads.m
+
+--- Running model/Test_coordinate_mapping_helpers.m ---
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.
+PASS: model/Test_coordinate_mapping_helpers.m
+
+--- Running model/Test_direction_mode_selection.m ---
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+PASS: resolve_step9_deflection_path gating
+All direction mode selection smoke tests passed.
+PASS: model/Test_direction_mode_selection.m
+
+--- Running model/Test_direction_scenarios.m ---
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+PASS: Step 9 auto_envelope scenario/path cross-check
+PASS: Step 9 legacy_pesai scenario/path cross-check
+All direction_scenarios smoke tests passed.
+PASS: model/Test_direction_scenarios.m
+
+--- Running model/Test_directional_deflection_envelope.m ---
+PASS: select_governing_deflection picks maximum deflection
+PASS: select_governing_deflection rejects empty input
+PASS: legacy scenarios excluded from directional_deflection_envelope
+PASS: directional_deflection_envelope output fields and single scenario
+PASS: directional_deflection_envelope auto_envelope D1-D4 integration
+PASS: compute_towertop_deflection_case legacy/directional beta=0 parity
+All Step 9 directional deflection envelope tests passed.
+PASS: model/Test_directional_deflection_envelope.m
+
+--- Running model/Test_get_floor_leg_positions.m ---
+PASS: floor 1 four-leg geometry and centroid
+PASS: floor 2 geometry extraction
+PASS: invalid floor rejected
+PASS: invalid leg id rejected
+PASS: non-four-leg floor rejected
+All get_floor_leg_positions smoke tests passed.
+PASS: model/Test_get_floor_leg_positions.m
+
+--- Running model/Test_resize_member_sections.m ---
+PASS: resize_member_sections leg increment
+PASS: resize_member_sections brace increment
+All resize_member_sections smoke tests passed.
+PASS: model/Test_resize_member_sections.m
+
+--- Running model/Test_step11_validation_manifest.m ---
+PASS: manifest entry direction_scenario_table -> Test_direction_scenarios.m
+PASS: manifest entry eq48_algebra -> Test_combine_plan_loads.m
+PASS: manifest entry four_leg_envelope -> Test_uls_member_demands.m
+PASS: manifest entry beta0_hydro_regression -> Test_wave_angle_kinematics.m
+PASS: manifest entry mode_dispatch -> Test_direction_mode_selection.m
+PASS: manifest entry summary_metadata -> Test_write_directional_summary.m
+All Step 11 validation manifest checks passed.
+PASS: model/Test_step11_validation_manifest.m
+
+--- Running model/Test_step6_bottom_floor_tension_selection.m ---
+PASS: bottom-floor-only V4 assignment (4 floors)
+PASS: bottom-floor-only V4 assignment (3 floors)
+All Step 6 bottom-floor tension selection tests passed.
+PASS: model/Test_step6_bottom_floor_tension_selection.m
+
+--- Running model/Test_step7_brace_demand.m ---
+PASS: Eq.52 numeric consistency (Fx-only)
+PASS: Eq.52 numeric consistency (Fx+Fy)
+PASS: InvalidBraceAngle at cos(sitah) ~ 0
+PASS: brace demand stable and pesai-independent (no pesai in API)
+PASS: legacy vs paper formula separation confirmed
+All Step 7 brace demand tests passed.
+PASS: model/Test_step7_brace_demand.m
+
+--- Running model/Test_step8_directional_envelope_integration.m ---
+PASS: step5_floor_indices bounds for Num_floor=3/4
+PASS: step5_floor_indices rejects invalid Num_floor
+PASS: resolve_step5_uls_path mode split
+PASS: direction_scenarios counts for Step 8 modes
+PASS: legacy scenarios excluded from uls_floor_envelope
+PASS: build_hydro_cache_key stability and separation
+PASS: hydro cache hit on repeated key
+PASS: resize_member_sections uses configured deltas
+PASS: resolve_step9_deflection_path mode split
+All Step 8 directional envelope integration tests passed.
+PASS: model/Test_step8_directional_envelope_integration.m
+
+--- Running model/Test_step9_mode_gating.m ---
+PASS: resolve_step9_deflection_path mode gating
+PASS: Step 5 and Step 9 path dispatch consistency
+PASS: resolve_step9_deflection_path validates cfg fields
+All Step 9 mode gating tests passed.
+PASS: model/Test_step9_mode_gating.m
+
+--- Running model/Test_uls_member_demands.m ---
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: model/Test_uls_member_demands.m
+
+--- Running model/Test_wave_angle_kinematics.m ---
+PASS: wave_phase_x_eff hand checks
+PASS: Vel_fluid_particle beta=0 matches legacy formula
+PASS: ACC_fluid_particle beta=0 matches legacy formula
+PASS: surface_elevation beta=0 matches legacy formula
+PASS: Vel_fluid_particle beta=90 sanity
+PASS: resolve_wave_beta_propagation global fallback
+PASS: hydro_load_directional_max beta=0 matches legacy chain
+All wave angle kinematics smoke tests passed.
+PASS: model/Test_wave_angle_kinematics.m
+
+--- Running model/Test_write_directional_summary.m ---
+=== Directional Load Summary ===
+mode = auto_envelope
+governing_direction_case = D4
+beta_wind = 45 deg
+beta_wave = 45 deg
+governing_environment_case = EWM_50+Hm50
+governing_floor = 3
+governing_member_type = brace
+governing_member_id = 12
+demand = 1.5e+06
+capacity = 1.2e+06
+=== Directional Deflection Summary ===
+governing_direction_case = D2
+beta_wind = 0 deg
+beta_wave = 90 deg
+governing_environment_case = 1yr_NTM
+governing_member_type = deflection
+max_deflection = 0.35 m
+PASS: write_directional_summary paper dual-section format
+=== Directional Load Summary (Legacy) ===
+mode = legacy_pesai
+pesai_legacy = 45 deg
+calculation = old scalar formulation
+purpose = regression comparison only
+PASS: write_directional_summary legacy format
+PASS: write_directional_summary validates required fields
+All write_directional_summary tests passed.
+PASS: model/Test_write_directional_summary.m
+
+--- Running model/DriveCode_1.m ---
+FAIL: model/DriveCode_1.m
+  MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_1.m 行:100 列:9
+字符向量未正常终止。
+
+--- Running model/DriveCode_250401.m ---
+FAIL: model/DriveCode_250401.m
+  MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_250401.m 行:77 列:9
+字符向量未正常终止。
+
+--- Running modulus/Test_Member_Hydro.m ---
+FAIL: modulus/Test_Member_Hydro.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Member_Hydro_sample0.m ---
+FAIL: modulus/Test_Member_Hydro_sample0.m
+  MATLAB:m_unexpected_sep: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\modulus\Test_Member_Hydro_sample0.m 行:90 列:12
+表达式无效。请检查缺失或多余的字符。
+
+--- Running modulus/Test_Member_Hydro_sample1.m ---
+FAIL: modulus/Test_Member_Hydro_sample1.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Member_Hydro_sample10_allbar.m ---
+FAIL: modulus/Test_Member_Hydro_sample10_allbar.m
+  MATLAB:TooManyOutputs: 输出参数太多。
+
+--- Running modulus/Test_Member_Hydro_sample11_allbar.m ---
+FAIL: modulus/Test_Member_Hydro_sample11_allbar.m
+  MATLAB:minrhs: 输入参数的数目不足。
+
+--- Running modulus/Test_Member_Hydro_sample12.m ---
+FAIL: modulus/Test_Member_Hydro_sample12.m
+  MATLAB:minrhs: 输入参数的数目不足。
+
+--- Running modulus/Test_Member_Hydro_sample2.m ---
+PASS: modulus/Test_Member_Hydro_sample2.m
+
+--- Running modulus/Test_Member_Hydro_sample3.m ---
+PASS: modulus/Test_Member_Hydro_sample3.m
+
+--- Running modulus/Test_Member_Hydro_sample4.m ---
+PASS: modulus/Test_Member_Hydro_sample4.m
+
+--- Running modulus/Test_Member_Hydro_sample5.m ---
+PASS: modulus/Test_Member_Hydro_sample5.m
+
+--- Running modulus/Test_Member_Hydro_sample6.m ---
+PASS: modulus/Test_Member_Hydro_sample6.m
+
+--- Running modulus/Test_Member_Hydro_sample7.m ---
+PASS: modulus/Test_Member_Hydro_sample7.m
+
+--- Running modulus/Test_Member_Hydro_sample7_modify.m ---
+PASS: modulus/Test_Member_Hydro_sample7_modify.m
+
+--- Running modulus/Test_Member_Hydro_sample7_modify2.m ---
+PASS: modulus/Test_Member_Hydro_sample7_modify2.m
+
+--- Running modulus/Test_Member_Hydro_sample8.m ---
+PASS: modulus/Test_Member_Hydro_sample8.m
+
+--- Running modulus/Test_Member_Hydro_sample9_allbar.m ---
+PASS: modulus/Test_Member_Hydro_sample9_allbar.m
+
+--- Running modulus/Test_Member_Hydro_test1.m ---
+FAIL: modulus/Test_Member_Hydro_test1.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Member_Hydro_test2.m ---
+FAIL: modulus/Test_Member_Hydro_test2.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Member_Hydro_test3.m ---
+FAIL: modulus/Test_Member_Hydro_test3.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Member_Hydro_test4.m ---
+FAIL: modulus/Test_Member_Hydro_test4.m
+  MATLAB:TooManyInputs: 输入参数太多。
+
+--- Running modulus/Test_Vel_fluid.m ---
+PASS: modulus/Test_Vel_fluid.m
+
+--- Running modulus/Test_coordinate.m ---
+PASS: modulus/Test_coordinate.m
+
+--- Running modulus/Test_current_vel.m ---
+PASS: modulus/Test_current_vel.m
+
+--- Running modulus/Test_intergral_mode_shape.m ---
+PASS: modulus/Test_intergral_mode_shape.m
+
+--- Running modulus/Test_y_coordinate.m ---
+FAIL: modulus/Test_y_coordinate.m
+  MATLAB:undefinedVarOrClass: 未定义变量 "Member" 或类 "Member.Xt"。
+
+Validation matrix refresh finished: 31 PASS, 13 FAIL
+Matrix written to C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\validation_pass_fail_matrix.csv
+Log written to C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\test_step12_validation_matrix_log.txt

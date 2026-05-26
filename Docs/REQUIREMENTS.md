@@ -83,7 +83,7 @@ The system supports **preliminary engineering design** of **offshore wind turbin
 | FR-12 | The system **shall** generate member end coordinates for all legs and braces. | `Geometry_jacket_3f/4f.m` |
 | FR-13 | The system **shall** verify bottom width consistency (`|l_bottom_computed − L_bottom| ≤ 0.05 m`). | Step 2 error checks |
 | FR-14 | The system **shall** determine total bar count: `(Num_pile + 2·Num_pile) · Num_floor`. | `Bar_num_determine.m` |
-| FR-15 | The system **shall** rotate the structure by azimuth `pesai` and discretize members for hydrodynamics. | `Coord_trans_bar_discrete.m` |
+| FR-15 | The system **shall** discretize members for hydrodynamics using structure azimuth from `resolve_structure_azimuth(cfg)` (`psi_site` in paper modes; `pesai_legacy` in legacy mode). | `Coord_trans_bar_discrete.m`, `resolve_structure_azimuth.m` |
 
 ### 3.3 Loading
 
@@ -96,15 +96,21 @@ The system supports **preliminary engineering design** of **offshore wind turbin
 | FR-24 | The system **shall** integrate hydrodynamic loads over discretized members using drag and inertia (`cd`, `cm`). | `Hydro_member1.m`, `Hydro_structure.m` |
 | FR-25 | The system **shall** include current velocity profile via surface and near-bed components. | `Current_vel.m` |
 
+| FR-26 | In **`auto_envelope`** mode, the system **shall** evaluate paper direction cases D1–D4 and envelope governing ULS demands per floor. | `direction_scenarios.m`, `uls_floor_envelope.m` |
+| FR-27 | In **`single_direction`** mode, the system **shall** evaluate user-specified `beta_wind` and `beta_wave`. | `build_design_config.m`, `direction_scenarios.m` |
+| FR-28 | In **`legacy_pesai`** mode, the system **shall** preserve scalar Step 5 behaviour for regression. | `resolve_step5_uls_path.m`, driver legacy branch |
+| FR-29 | When enabled, Step 9 **shall** envelope tower-top deflection over active direction cases. | `directional_deflection_envelope.m` |
+| FR-2A | Each run **shall** emit auditable directional summary metadata (ULS + deflection governing cases). | `write_directional_summary.m` |
+
 ### 3.4 Structural design checks
 
 | Req ID | Requirement | Source |
 |--------|-------------|--------|
-| FR-30 | The system **shall** perform ULS checks on **each of four floors** (loop `i=1:4`). | Step 5 |
+| FR-30 | The system **shall** perform ULS checks on floors `1..Num_floor` (via `step5_floor_indices`). | Step 5 |
 | FR-31 | The system **shall** compute leg compression capacity using column buckling curves (`sigma_allowable.m`, `k_leg=1.0`). | Step 5 |
 | FR-32 | The system **shall** compute brace compression capacity (`k_brace=0.8`). | Step 5 |
 | FR-33 | The system **shall** combine wind and wave actions with factor **1.3** on governing moment/force. | Step 5 |
-| FR-34 | When capacity is exceeded, the system **shall** iteratively increase member sizes until ULS is satisfied or loop exits. | Step 5 `while` loop |
+| FR-34 | When capacity is exceeded, the system **shall** iteratively increase member sizes until ULS is satisfied or loop exits. Paper modes use configured `delta_D_*` / `delta_t_*` increments. | Step 5, `resize_member_sections.m` |
 | FR-35 | The system **shall** size pile OD from leg-4 tension using shaft friction along embedment depth. | `Diameter_pile.m`, Step 6 |
 
 ### 3.5 Dynamics and serviceability
@@ -123,6 +129,7 @@ The system supports **preliminary engineering design** of **offshore wind turbin
 | FR-50 | The system **shall** write a session log to `Validations/model/session_output.txt` from Step 4 onward. | `diary()` |
 | FR-51 | The system **shall** export member and node tables in engineering coordinates (SWL at Z=0). | `member_export.m`, `node_export.m` |
 | FR-52 | The system **shall** display a 3-D jacket plot during export. | `node_export.m`, `cord_Cal.m` |
+| FR-53 | The system **shall** write `directional_summary.txt` with governing direction metadata when directional modes are active. | `write_directional_summary.m` |
 
 ---
 
@@ -154,7 +161,7 @@ All fields listed in [USER_MANUAL.md §8.2](USER_MANUAL.md) must be present and 
 |-----------|------------|
 | `Num_floor` | Must be 3 or 4 |
 | `Num_pile` | Intended 3 or 4; leg indexing currently requires 4 |
-| `pesai` (hardcoded) | Must be `< 90` deg |
+| `pesai_legacy` | Used when `load_direction_mode = 2`; must be `< 90` deg |
 | `U_ss0`, `U_ns0` | Must be ≥ 0 (`Current_vel.m`) |
 | Current/wave time window | `t1 ≥ t0`, `dt ≥ 0` |
 
@@ -184,12 +191,13 @@ Column definitions: see [USER_MANUAL.md §9.2](USER_MANUAL.md).
 
 | Req ID | Requirement | Implementation |
 |--------|-------------|----------------|
-| VR-01 | End-to-end regression script available | `Validations/model/DriveCode_1.m` (PASS) |
+| VR-01 | End-to-end regression script available | `Validations/model/DriveCode_1.m` (FAIL — encoding/syntax; use `DriveCodeJckDesign` + directional tests) |
 | VR-02 | Module tests for hydro, coordinates, currents | `Validations/modulus/Test_*.m` |
-| VR-03 | Pass/fail tracking | `Validations/validation_pass_fail_matrix.csv` |
+| VR-03 | Pass/fail tracking | `Validations/validation_pass_fail_matrix.csv` (automated via `Run_validation_matrix.m`) |
 | VR-04 | Exported geometry files reproducible | Compare `jacket_elements.dat`, `node_coordinates.dat` |
+| VR-05 | Directional-load minimum test suite | `Run_step11_directional_validation.m`, `directional_validation_pass_fail_matrix.csv` |
 
-Current validation status: **14 PASS / 13 FAIL** (see [CODE_REVIEW.md §4](CODE_REVIEW.md)).
+Current validation status: **31 PASS / 13 FAIL** (44 scripts; see [CODE_REVIEW.md §4](CODE_REVIEW.md)). All directional `model/Test_*.m` scripts PASS.
 
 ---
 
@@ -207,7 +215,7 @@ Current validation status: **14 PASS / 13 FAIL** (see [CODE_REVIEW.md §4](CODE_
 ### 8.2 Software constraints
 
 1. Heavy use of **`global` variables** (`Member`, `Hydro`, `Wave`, `Current`, `Discrete`) — functions are not re-entrant.
-2. Step 5 floor loop is fixed at **4 iterations** regardless of `Num_floor`.
+2. Step 5 floor loop respects **`Num_floor`** via `step5_floor_indices` in paper modes; legacy branch aligned.
 3. Output path and several design constants are **not configurable** without code edits.
 
 ---
@@ -247,6 +255,6 @@ These are **not implemented** but commonly expected in a mature design tool:
 1. Formal requirements sign-off and versioned input schema.
 2. Complete parameter usage (`k_weibull`, `s_weibull`, input `Ct1`).
 3. Configurable output directory and batch/non-interactive sizing defaults.
-4. Automated regression CI running all `Validations/modulus` scripts.
+4. Automated regression CI running all `Validations/modulus` scripts — **`Run_validation_matrix.m`** available; legacy hydro scripts still need signature repair.
 5. ~~Published theory document~~ — available as SCI paper PDF + [THEORY_REFERENCE.md](THEORY_REFERENCE.md).
 6. Explicit design standard compliance report (IEC, DNV, etc.).

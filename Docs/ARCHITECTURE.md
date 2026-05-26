@@ -167,7 +167,9 @@ sequenceDiagram
   participant Geo as Geometry_*
   participant CT as Coord_trans_bar_discrete
   participant Hydro as Hydro_load_*
-  participant ULS as Step5 inline
+  participant ULS as uls_floor_envelope / legacy Step5
+  participant Defl as directional_deflection_envelope
+  participant Sum as write_directional_summary
   participant Exp as member/node_export
 
   User->>Driver: input file path + D/t prompts
@@ -175,13 +177,15 @@ sequenceDiagram
   RD-->>Driver: dataStruct
   Driver->>Geo: Num_floor, L_top, h_Jacket, ...
   Geo-->>Member: X0/Y0/Z0, Xt/Yt/Zt
-  Driver->>CT: pesai, Num_bar
+  Driver->>CT: resolve_structure_azimuth(cfg), Num_bar
   CT-->>Member: rotated coords, L, angles
   CT-->>Discrete: Num_ele, dL
-  Driver->>Hydro: time history + 1/50-yr combos
+  Driver->>Hydro: time history + directional beta_wave
   Hydro-->>Driver: F, M per floor
-  Driver->>ULS: capacity vs demand loops
+  Driver->>ULS: direction envelope or legacy scalar loop
   ULS-->>Member: updated D, t
+  Driver->>Defl: Step 9 directional envelope (optional)
+  Driver->>Sum: directional_summary.txt
   Driver->>Exp: engineering-axis export
   Exp-->>User: .dat files + figure
 ```
@@ -196,22 +200,26 @@ sequenceDiagram
 
 | Concern | Modules | Count |
 |---------|---------|-------|
-| Driver / config | `DriveCodeJckDesign`, `readData` | 2 |
+| Driver / config | `DriveCodeJckDesign`, `readData`, `build_design_config`, `resolve_step5_uls_path`, `resolve_step9_deflection_path`, `step5_floor_indices` | 7 |
+| Directional loads | `direction_scenarios`, `combine_plan_loads`, `uls_member_demands`, `uls_floor_envelope`, `run_step5_directional_floor`, `hydro_load_directional_max`, `directional_deflection_envelope`, `compute_towertop_deflection_case`, `build_directional_summary`, `write_directional_summary`, `resize_member_sections`, `resolve_structure_azimuth`, `get_floor_leg_positions` | 14 |
 | Jacket geometry | `Geometry_jacket_3f/4f`, `height_wd_jac_floor_*`, `Bar_num_determine`, `set_*_ID_per_floor`, `get_bar_array_for_floor`, `get_width_of_floor_*`, `get_center_hydro_load_for_floor_*`, `checkbarnumber` | 14 |
 | Coordinate / discretization | `coordinate_trans`, `Coord_trans_bar_discrete`, `Member_length`, `Member_fai_y`, `Member_cita_x`, `Direction_bar`, `Discrete_bar` | 7 |
 | Sizing / strength | `Diameter_thickness_ini/update`, `sigma_allowable`, `Weight_jacket`, `Diameter_pile` | 5 |
 | Wind | `Moment_Jac_wind` (+ inline thrust in driver) | 1 + inline |
-| Hydrodynamics | `wave_number`, `surface_elevation`, `Vel_fluid_particle`, `Vel_resolve`, `ACC_*`, `Current_vel`, `Hydro_member1`, `Hydro_member_drag/inertia_only`, `Hydro_structure`, `Hydro_load_timehistory`, `Hydro_load_max`, `Hydro_load_1and50yrs` | 15 |
+| Hydrodynamics | `wave_number`, `surface_elevation`, `Vel_fluid_particle`, `Vel_resolve`, `ACC_*`, `Current_vel`, `Hydro_member1`, `Hydro_member_drag/inertia_only`, `Hydro_structure`, `Hydro_load_timehistory`, `Hydro_load_max`, `Hydro_load_1and50yrs`, `hydro_load_directional_max`, `resolve_wave_beta_propagation`, `wave_phase_x_eff` | 17 |
 | Dynamics | `intergral_mode_shape`, `Distribute_mass_jacket` | 2 |
 | Export / viz | `member_export`, `node_export`, `cord_Cal` | 3 |
 
-**Total:** 47 production `.m` files in `modules/` (excluding `.asv` autosaves).
+**Total:** 60+ production `.m` files in `modules/` (excluding `.asv` autosaves).
 
 ### 5.2 Dependency direction
 
 ```
 DriveCodeJckDesign
-  ├── readData
+  ├── readData, build_design_config
+  ├── direction_scenarios → combine_plan_loads → uls_member_demands → uls_floor_envelope
+  ├── run_step5_directional_floor, resize_member_sections
+  ├── directional_deflection_envelope, write_directional_summary
   ├── Geometry_jacket_* → Member
   ├── Diameter_thickness_* → Member
   ├── Coord_trans_bar_discrete
@@ -320,7 +328,7 @@ Not implemented — listed for maintainers:
 
 1. **Replace globals** with a single `model` struct passed through the call chain.
 2. **Extract load cases** into `WindLoadCase.m` / `WaveLoadCase.m` classes or structs.
-3. **Configuration object** for paths, constants (`Gs`, `pesai`, factors).
+3. **Configuration object** for paths, constants (`Gs`, resize deltas, directional modes) — partially delivered via `build_design_config.m`.
 4. **Test harness** (`matlab.unittest`) invoking modulus scripts in CI.
 5. **Split driver** into step functions: `step02_geometry()`, `step05_uls()`, etc.
 

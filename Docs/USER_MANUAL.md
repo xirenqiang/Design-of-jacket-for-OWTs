@@ -24,6 +24,7 @@ This project is intended for engineering design study and verification workflows
 `DriveCodeJckDesign` executes the end-to-end design workflow, including:
 
 - Input parsing from a user-provided data file.
+- Directional load configuration (`auto_envelope`, `single_direction`, `legacy_pesai`) per paper §2.5.
 - Jacket global geometry generation (3-bay / 4-bay).
 - Initial member sizing and cross-section assignment.
 - Extreme wind/wave/current load setup.
@@ -89,7 +90,7 @@ Current engineering assumptions reflected in code include:
 - Interactive sizing inputs for key member dimensions (`D_leg`, `t_leg`, `D_brace`, `t_brace`).
 - Frequency-target-driven initialization and iterative strength checks.
 - IEC 61400-1-style wind load approximations (ETM, EOG, EWM); verify against the standard before production use.
-- Soil shear modulus `Gs` and jacket azimuth `pesai` are hardcoded in the driver (see Section 6.3).
+- Soil shear modulus `Gs` is hardcoded in the driver (see Section 8.3). Jacket azimuth for paper modes is set via `psi_site`; `legacy_pesai` mode uses `pesai_legacy` from the input file.
 
 Encoding and maintenance note:
 
@@ -235,7 +236,7 @@ All parameters below are read from the input file unless noted in Section 8.3.
 | `beta_wind` | deg | Wind direction for `single_direction` mode (default `0`) |
 | `beta_wave` | deg | Wave/current direction for `single_direction` mode (default `45`) |
 | `pesai_legacy` | deg | Structure–wave relative angle for `legacy_pesai` mode (default `45`) |
-| `enable_directional_deflection` | flag | Enable Step 9 directional envelope when implemented (default `1`) |
+| `enable_directional_deflection` | flag | Enable Step 9 directional deflection envelope (default `1`) |
 | `delta_D_leg` | m | Leg OD increment during ULS resize (default `0.10`) |
 | `delta_t_leg` | m | Leg wall thickness increment (default `0.005`) |
 | `delta_D_brace` | m | Brace OD increment during ULS resize (default `0.06`) |
@@ -263,12 +264,12 @@ Use the printed `D_leg_ini` / `D_brace_ini` suggestions as starting points, or e
 | Symbol | Value | Notes |
 |--------|-------|-------|
 | `Ct1` | `0.052` | Overrides input-file `Ct1` for EWM thrust |
-| `pesai` | `45` deg | Jacket plan azimuth; code errors if `pesai >= 90` |
+| `pesai` | `45` deg | Used only in `legacy_pesai` mode (`load_direction_mode=2`); paper modes use `psi_site` + `beta_wind`/`beta_wave` |
 | `dL_ele_target` | `3.0` m | Target hydrodynamic element length |
 | `Gs` | `15e6` | Soil shear modulus for frequency analysis |
 | `interface_angle` | `29` deg | Pile–soil interface friction angle |
 | `K0` | `1.0` | Lateral earth pressure coefficient |
-| Leg/brace iteration increments | `D_leg += delta_D_leg`, etc. from input | Step 5 resize (planned; `cfg` available from Step 1) |
+| Leg/brace iteration increments | `D_leg += delta_D_leg`, etc. from input | Step 5 resize in paper modes via `resize_member_sections.m` |
 
 ### 8.4 Input path resolution
 
@@ -292,6 +293,7 @@ All primary outputs are written under **`Validations/model/`**, regardless of wh
 | File | Producer | Description |
 |------|----------|-------------|
 | `session_output.txt` | `diary` from Step 4 onward | Full console log for loads through export |
+| `directional_summary.txt` | `write_directional_summary.m` | Auditable ULS + deflection governing direction metadata (paper modes) or legacy regression block |
 | `jacket_elements.dat` | `member_export` | Tab-separated member line elements |
 | `node_coordinates.dat` | `node_export` | Tab-separated unique node coordinates |
 
@@ -423,29 +425,49 @@ Purpose: verify local behavior of individual computational modules.
 
 ### 11.3 Running validations and interpreting results
 
-**Integrated case:**
+**Automated validation matrix (recommended):**
+
+```matlab
+cd('<project_root>');
+addpath('Validations');
+Run_validation_matrix   % writes Validations/validation_pass_fail_matrix.csv
+```
+
+**Directional-load regression suite (Step 11):**
+
+```matlab
+addpath('Validations/model');
+Run_step11_directional_validation   % writes Validations/directional_validation_pass_fail_matrix.csv
+```
+
+**Integrated case (manual):**
 
 ```matlab
 cd('<project_root>/Validations/model');
 DriveCode_1   % or run the script in the editor
 ```
 
-**Module tests:**
+**Module tests (manual):**
 
 ```matlab
 cd('<project_root>/Validations/modulus');
 Test_current_vel   % example; run scripts individually
 ```
 
-**Pass/fail matrix:** `Validations/validation_pass_fail_matrix.csv`
+**Pass/fail matrices:**
 
-Last recorded summary: **14 PASS / 13 FAIL**. Common failure causes:
+| File | Scope |
+|------|-------|
+| `Validations/validation_pass_fail_matrix.csv` | Full model + modulus script matrix (44 scripts) |
+| `Validations/directional_validation_pass_fail_matrix.csv` | Directional-load minimum + extended tests |
 
-- Stale absolute paths (e.g. `DriveCode_250401.m`)
-- API signature drift between test scripts and current module functions
-- Incomplete or syntactically broken test scripts (`Test_Member_Hydro_sample0.m`)
+Last recorded summary (2026-05-26): **31 PASS / 13 FAIL** in the full matrix. All 18 directional `model/Test_*.m` scripts PASS. Common failure causes in legacy modulus scripts:
 
-Re-run failing scripts after fixes and update the CSV manually to track regression status.
+- Stale absolute paths or encoding damage (`DriveCode_1.m`, `DriveCode_250401.m`, `Test_Member_Hydro_sample0.m`)
+- API signature drift between test scripts and current module functions (`Test_Member_Hydro_test*.m`)
+- Missing global setup when run in isolation (`Test_y_coordinate.m`)
+
+Re-run `Run_validation_matrix` after fixes; the CSV is overwritten automatically.
 
 ## 12. Maintenance Tools (`tools/`)
 
@@ -511,7 +533,8 @@ Scripts referencing external projects (`patch_subdyn_ssi_decl_sections.py`, `syn
 
 | Group | Modules |
 |-------|---------|
-| Driver / I/O | `DriveCodeJckDesign.m`, `readData.m` |
+| Driver / I/O | `DriveCodeJckDesign.m`, `readData.m`, `build_design_config.m` |
+| Directional loads | `direction_scenarios.m`, `combine_plan_loads.m`, `uls_member_demands.m`, `uls_floor_envelope.m`, `run_step5_directional_floor.m`, `directional_deflection_envelope.m`, `build_directional_summary.m`, `write_directional_summary.m` |
 | Geometry | `Geometry_jacket_3f.m`, `Geometry_jacket_4f.m`, `height_wd_jac_floor_3f.m`, `height_wd_jac_floor_4f.m`, `Bar_num_determine.m`, `Member_length.m`, `Direction_bar.m`, … |
 | Sizing / strength | `Diameter_thickness_ini.m`, `Diameter_thickness_update.m`, `sigma_allowable.m`, `Weight_jacket.m`, `Diameter_pile.m` |
 | Wind | `Moment_Jac_wind.m` (+ inline ETM/EOG/EWM in driver) |
@@ -536,6 +559,7 @@ Globals used heavily at runtime: `Member`, `Hydro`, `Wave`, `Current`, `Discrete
 
 | Date | Change |
 |------|--------|
+| 2026-05-26 | Step 12: directional workflow complete; `Run_validation_matrix`, `directional_summary.txt`, validation matrix 31/44 PASS; module index updated. |
 | 2026-05-21 | Expanded manual: 10-step workflow, input/output specs, coordinate mapping, validation runbook, build/rebuild notes, maintenance tools, FAQ; added root `README.md`. |
 | 2026-05-21 | Step 1 directional config: `inputdata.dat` fields, `build_design_config.m`, driver cfg echo; smoke test `Test_build_design_config.m`. |
 | (template) | `YYYY-MM-DD`: description of manual update. |

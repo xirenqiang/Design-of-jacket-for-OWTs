@@ -175,13 +175,15 @@ Computed for 1-yr, 2-yr, 50-yr periods.
 ### 5.3 Hydrodynamic discretization
 
 ```
-pesai = 45°   (hardcoded azimuth)
+resolve_structure_azimuth(cfg)  →  psi for Coord_trans_bar_discrete
 dL_ele_target = 3.0 m
-Coord_trans_bar_discrete(pesai, Num_bar):
-  - rotate each member end about Y by pesai
+Coord_trans_bar_discrete(psi, Num_bar):
+  - rotate each member end about Y by structure azimuth
   - compute length, orientation angles
   - split into Discrete.Num_ele segments ~3 m
 ```
+
+In **`legacy_pesai`** mode, `psi` comes from `pesai_legacy` (default 45°). In paper modes (`auto_envelope`, `single_direction`), `psi_site` sets installation azimuth; wind/wave directions `β₁`, `β₂` are applied separately in load combination (Eq. 48).
 
 **Logging starts:** `diary(Validations/model/session_output.txt)`.
 
@@ -189,9 +191,26 @@ Coord_trans_bar_discrete(pesai, Num_bar):
 
 ## 6. Step 5 — ULS Member Strength Design
 
-### 6.1 Per-floor loop (`i = 1..4`)
+Step 5 dispatches by `load_direction_mode` (see `resolve_step5_uls_path.m`):
 
-For each floor:
+| Mode | Path | Demand model |
+|------|------|--------------|
+| `auto_envelope` / `single_direction` | `run_step5_directional_floor.m` → `uls_floor_envelope.m` | Paper Eqs (48)–(52); envelope over direction cases × ULS wind/sea pairs |
+| `legacy_pesai` | Inline scalar loop in driver | Original `M`, `H`, `V1`, `Fb` with `cosd(pesai)` brace term |
+
+### 6.1 Per-floor loop (paper modes)
+
+For each floor index from `step5_floor_indices(Num_floor)`:
+
+1. **Select bars:** `Num_bar_array = get_bar_array_for_floor(i, ...)`
+2. **Reference elevation:** `Y0_position(i)`, leg positions via `get_floor_leg_positions`
+3. **Envelope:** loop direction scenarios (D1–D4 or single pair) × environment cases (ETM+Hm2, EOG+Hm2, EWM_50+Hm50, EWM_1+Hm1)
+4. **Demands:** `combine_plan_loads` + `uls_member_demands` → governing leg compression/tension and brace axial
+5. **Resize:** `resize_member_sections` using configured `delta_D_*`, `delta_t_*` from input
+
+### 6.2 Per-floor loop (legacy_pesai)
+
+For each floor `i = 1..Num_floor` (via `step5_floor_indices`):
 
 1. **Select bars:** `Num_bar_array = get_bar_array_for_floor(i, ...)`
 2. **Reference elevation:** `Y0_position(i)`, `Width(i)` from 3f/4f helpers
@@ -251,17 +270,17 @@ Effective length factors: **`k_leg = 1.0`**, **`k_brace = 0.8`**.
 
 ### 6.4 Resize iteration
 
+**Paper modes** (`resize_member_sections.m`):
+
 ```
-WHILE V1 > F_allowable_leg OR Fb > F_allowable_brace:
-  IF leg governs:
-    D_leg = 1.2          % fixed absolute value, not increment
-    t_leg += 0.005
-  IF brace governs:
-    D_brace = 0.6        % fixed absolute value
-    t_brace += 0.01
+WHILE governing demand > capacity:
+  IF leg governs:  D_leg += delta_D_leg;  t_leg += delta_t_leg
+  IF brace governs: D_brace += delta_D_brace; t_brace += delta_t_brace
   UPDATE Member via Diameter_thickness_update
   RECOMPUTE hydro loads and demands
 ```
+
+**Legacy mode** retains fixed absolute jumps (`D_leg = 1.2`, `D_brace = 0.6`) for regression comparison only.
 
 Store converged `D_legs(i)`, `t_legs(i)`, `D_braces(i)`, `t_braces(i)`.
 
@@ -328,9 +347,13 @@ Report only — no acceptance criteria enforced in code.
 
 ## 10. Step 9 — Tower-Top Deflection
 
-Uses **last floor's** `Num_bar_array` and `Y0_position(i)` from Step 5 loop (i=4).
+When `enable_directional_deflection = 1` and mode is not `legacy_pesai`, Step 9 uses `directional_deflection_envelope.m` to evaluate D1–D4 (or single direction) with **1-yr NTM** wind + 1-yr wave, selecting the governing deflection case.
 
-Components:
+**Legacy path:** scalar NTM + 1-yr wave deflection (unchanged behaviour for regression).
+
+Uses bottom-floor hydro reference and last converged member properties from Step 5.
+
+Components (legacy single-case path):
 
 1. **Wave:** 1-yr time history max → simplified cantilever deflection using `K_R`, `EI_Jacket`.
 2. **Wind (NTM-like):** `u_ntm = 1.28·σ_ntm,filtered` → `F_ntm` → deflection with `K_R`, `EI_JacketTower`.
@@ -338,6 +361,8 @@ Components:
 ```
 delt_towertop = delt_wind + delt_wave
 ```
+
+After Step 9, `write_directional_summary.m` emits `directional_summary.txt` with governing ULS and deflection metadata.
 
 No explicit pass/fail limit in code.
 
@@ -441,11 +466,10 @@ Legs numbered sequentially by floor: `(i−1)·Num_pile + j`.
 
 ## 15. Known Design Limitations
 
-1. **Fixed resize values** (`D_leg=1.2`, `D_brace=0.6`) can overshoot or behave non-monotonically vs. prior user input.
-2. **Four-floor ULS loop** runs even for 3-bay jackets.
-3. **`pesai`, `Gs`, `Ct1`** not in input file — limits parametric studies without code edits.
-4. **Single-leg demand model** (leg 1 compression, leg 4 tension) — not full 3-D frame analysis.
-5. **Empirical tower mass** may disagree with `m_t` from input.
-6. **No explicit buckling check** beyond axial `sigma_allowable` column formula.
+1. **`legacy_pesai`** branch still uses fixed resize jumps (`D_leg=1.2`, `D_brace=0.6`); paper modes use configured increments.
+2. **`Gs`, `Ct1`** remain hardcoded in driver; directional azimuth is configurable via input (`psi_site`, `beta_*`, `pesai_legacy`).
+3. **Single-leg demand model** (leg 1 compression, leg 4 tension) — not full 3-D frame analysis.
+4. **Empirical tower mass** may disagree with `m_t` from input.
+5. **No explicit buckling check** beyond axial `sigma_allowable` column formula.
 
 See [CODE_REVIEW.md](CODE_REVIEW.md) for audit findings and remediation priority.

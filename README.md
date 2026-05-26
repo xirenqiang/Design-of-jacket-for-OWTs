@@ -8,7 +8,7 @@ Offshore wind **jacket support structure preliminary design** toolkit (MATLAB).
 
 | Branch / tag | Purpose |
 |--------------|---------|
-| **`main`** | Current development baseline — directional-load workflow (PLAN Steps 1–8), active maintenance and new features |
+| **`main`** | Current development baseline — directional-load workflow (PLAN Steps 1–12 complete), active maintenance |
 | **`legacy-early`** | Archived early implementation preserved for regression and historical comparison |
 | **`legacy-v1`** | Tag pointing to the same commit as `legacy-early` |
 

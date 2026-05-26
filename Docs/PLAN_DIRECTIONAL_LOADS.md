@@ -1,6 +1,6 @@
 # Implementation Plan: Multi-Direction Load Combinations (Paper §2.5)
 
-> **Status:** Hybrid plan approved by project owner; no MATLAB source code changes yet  
+> **Status:** Hybrid plan **implemented** on `main` (Steps 1–12 complete, 2026-05-26)  
 > **Authority:** Xi R. et al. (2026), §2.5 — [THEORY_REFERENCE.md](THEORY_REFERENCE.md)  
 > **Date:** 2026-05-21
 
@@ -795,6 +795,17 @@ After code changes:
 2. Re-run validation scripts and update `validation_pass_fail_matrix.csv`.
 3. Rebuild `DriveCodeJckDesign.exe`.
 4. Confirm the `.exe` timestamp is newer than modified `.m` files.
+
+**Implementation status (2026-05-26):** Step 12 complete (documentation + validation matrix; exe rebuild pending Compiler license on build host).
+
+- `Validations/Run_validation_matrix.m` — automated full-matrix runner; incremental CSV write; isolates legacy `clearvars` via `run_one_validation.m` (base workspace)
+- `Validations/run_one_validation.m` — single-script runner helper
+- `Validations/validation_pass_fail_matrix.csv` — refreshed **31 PASS / 13 FAIL** (44 scripts)
+- `Validations/model/test_step12_validation_matrix_log.txt` — Step 12 matrix run log
+- User docs updated: `USER_MANUAL.md`, `DESIGN.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `CODE_REVIEW.md`, `Docs/README.md`, root `README.md`
+- **Exe rebuild:** run `tools/build_drivecode_exe.m` on a machine with MATLAB Compiler; verify `build/DriveCodeJckDesign/DriveCodeJckDesign.exe` timestamp after build
+
+Note: 13 FAIL entries are legacy modulus/regression scripts (API drift, encoding damage); all 18 directional `model/Test_*.m` scripts PASS.
 
 ---
 
