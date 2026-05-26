@@ -1,0 +1,19 @@
+Step 5 directional performance profile: 26-May-2026 14:13:11
+Direction scenarios (paper): 4
+
+--- uls_floor_envelope (one floor, smoke hydro window t1=2 s) ---
+Elapsed (s): 0.162
+Governing: D4 / EWM_50+Hm50
+Cache stats: hits=7 misses=9 evaluations=16
+Cache hit rate: 0.438
+Expected combinations: 4 directions x 4 env cases = 16
+      Governing case: D1, env EWM_50+Hm50, beta_wind=0, beta_wave=0, controls=leg
+      Leg compression demand = 916974 (leg id 3), tension demand = 366974 (leg id 3)
+      Leg capacity = 1e+07; brace demand = 44137.2, capacity = 1e+07
+      Hydro cache: hits=7, misses=9, evaluations=16
+      After 0 leg / 0 brace iterations, floor 1 ULS pass.
+
+--- run_step5_directional_floor (floor 1, includes resize loop) ---
+Elapsed (s): 0.089
+
+Profile complete. Log: C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\test_directional_performance_log.txt

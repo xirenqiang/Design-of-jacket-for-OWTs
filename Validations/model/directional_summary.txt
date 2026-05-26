@@ -1,0 +1,18 @@
+=== Directional Load Summary ===
+mode = auto_envelope
+governing_direction_case = D4
+beta_wind = 45 deg
+beta_wave = 45 deg
+governing_environment_case = EWM_50+Hm50
+governing_floor = 1
+governing_member_type = brace
+governing_member_id = 17
+demand = 1.84858e+06
+capacity = 1.86562e+06
+=== Directional Deflection Summary ===
+governing_direction_case = D2
+beta_wind = 0 deg
+beta_wave = 90 deg
+governing_environment_case = 1yr_NTM
+governing_member_type = deflection
+max_deflection = 0.469324 m
