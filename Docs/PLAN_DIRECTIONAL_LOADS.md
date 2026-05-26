@@ -741,6 +741,20 @@ purpose = regression comparison only
 
 The summary may be appended to `session_output.txt` and/or written to a separate `directional_summary.txt`.
 
+**Implementation status (2026-05-25):** Step 10 complete.
+
+- `modules/build_directional_summary.m` — aggregate global ULS governing floor + optional Step 9 deflection metadata
+- `modules/write_directional_summary.m` — emit ULS + Deflection dual-section (paper) or legacy block to file and session log
+- `modules/uls_record_from_floor_envelope.m` — flatten per-floor `floorEnvelope` into Step 10 ULS records
+- `modules/run_step5_directional_floor.m` — attach `floor_id`, `leg_capacity`, `brace_capacity` to final envelope
+- `modules/DriveCodeJckDesign.m` — collect `ulsFloorRecords` in Step 5; build/write summary after Step 9
+- `Validations/model/Test_build_directional_summary.m` — governing floor selection, legacy branch, deflection attach (all PASS)
+- `Validations/model/Test_write_directional_summary.m` — paper dual-section + legacy format + field validation (all PASS)
+- `Validations/model/Run_step10_smoke_tests.m` — Step 10 smoke runner (writes `test_step10_smoke_log.txt`)
+- `Validations/model/test_step10_smoke_log.txt` — Step 10 + directional regression log
+
+Note: DriveCode geometry export remains its internal Step 10 label; PLAN Step 10 summary is written before that export step.
+
 ### Step 11 — Add validation tests
 
 Minimum validation additions:
