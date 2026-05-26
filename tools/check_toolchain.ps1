@@ -86,6 +86,7 @@ $timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK")
 
 # Known local paths from current machine conventions.
 $known = [ordered]@{
+    matlabExe  = "D:\Program Files\MATLAB\R2018a\bin\matlab.exe"
     vsDevenv   = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com"
     vsDevCmd   = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat"
     msvcCl     = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\HostX64\x64\cl.exe"
@@ -95,6 +96,7 @@ $known = [ordered]@{
 }
 
 $files = @(
+    (Test-FileTool -Name "matlab.matlab.exe" -Path $known.matlabExe),
     (Test-FileTool -Name "vs.devenv.com" -Path $known.vsDevenv),
     (Test-FileTool -Name "vs.VsDevCmd.bat" -Path $known.vsDevCmd),
     (Test-FileTool -Name "msvc.cl.exe" -Path $known.msvcCl),
@@ -133,6 +135,9 @@ if (Test-Path -LiteralPath $known.ifort) {
 $explicitVersions.ifxPathVersion = Get-IfxVersionText -Path $known.ifx
 
 $recommendations = [ordered]@{
+    matlabExe      = $known.matlabExe
+    runDriveCodeBat = Join-Path $PSScriptRoot "run_drivecode_matlab.bat"
+    buildExeBat     = Join-Path $PSScriptRoot "build_drivecode_exe.bat"
     startupCmd = @(
         "call `"$($known.oneapiVars)`"",
         "call `"$($known.vsDevCmd)`" -arch=amd64"

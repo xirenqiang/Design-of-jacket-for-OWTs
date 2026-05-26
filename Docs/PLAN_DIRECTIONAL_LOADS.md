@@ -796,14 +796,15 @@ After code changes:
 3. Rebuild `DriveCodeJckDesign.exe`.
 4. Confirm the `.exe` timestamp is newer than modified `.m` files.
 
-**Implementation status (2026-05-26):** Step 12 complete (documentation + validation matrix; exe rebuild pending Compiler license on build host).
+**Implementation status (2026-05-26):** Step 12 complete.
 
 - `Validations/Run_validation_matrix.m` — automated full-matrix runner; incremental CSV write; isolates legacy `clearvars` via `run_one_validation.m` (base workspace)
 - `Validations/run_one_validation.m` — single-script runner helper
 - `Validations/validation_pass_fail_matrix.csv` — refreshed **31 PASS / 13 FAIL** (44 scripts)
 - `Validations/model/test_step12_validation_matrix_log.txt` — Step 12 matrix run log
 - User docs updated: `USER_MANUAL.md`, `DESIGN.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `CODE_REVIEW.md`, `Docs/README.md`, root `README.md`
-- **Exe rebuild:** run `tools/build_drivecode_exe.m` on a machine with MATLAB Compiler; verify `build/DriveCodeJckDesign/DriveCodeJckDesign.exe` timestamp after build
+- `tools/check_toolchain.bat` — documents `MATLAB_EXE=D:\Program Files\MATLAB\R2018a\bin\matlab.exe` (same as `run_drivecode_matlab.bat`)
+- **Exe rebuild:** `build/DriveCodeJckDesign/DriveCodeJckDesign.exe` rebuilt on dev machine (2026-05-26, newer than latest `modules/*.m`)
 
 Note: 13 FAIL entries are legacy modulus/regression scripts (API drift, encoding damage); all 18 directional `model/Test_*.m` scripts PASS.
 
