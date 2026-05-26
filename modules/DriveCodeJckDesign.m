@@ -273,6 +273,7 @@ fprintf('Step 5: member strength checks.\n');
 step5Path = resolve_step5_uls_path(cfg);
 useLegacyStep5 = strcmp(step5Path, 'legacy_pesai');
 V4 = 0;
+ulsFloorRecords = [];
 if useLegacyStep5
     fprintf('      Step 5 ULS path: legacy_pesai (scalar).\n');
     fprintf('      Brace formula: H/cos(sitah)/cosd(pesai) for regression.\n');
@@ -575,6 +576,7 @@ for i = step5_floor_indices(Num_floor)
         fprintf('      Floor %d governing: %s / %s (leg ratio=%.3f, brace ratio=%.3f)\n', ...
             i, floorEnvelope.direction_case, floorEnvelope.environment_case, ...
             floorEnvelope.leg_ratio, floorEnvelope.brace_ratio);
+        ulsFloorRecords(end + 1) = uls_record_from_floor_envelope(floorEnvelope); %#ok<AGROW>
     end
     fprintf('      Floor %d: leg OD = %f m, t = %f m; brace OD = %f m, t = %f m\n',i,D_leg,t_leg,D_brace,t_brace);
         D_legs(i)=D_leg;
@@ -669,6 +671,7 @@ fprintf('Step 8: frequency sensitivity -- finished.\n\n');
 fprintf('Step 9: tower-top deflection (ULS).\n');
 step9Path = resolve_step9_deflection_path(cfg);
 useLegacyStep9 = strcmp(step9Path, 'legacy_step9');
+deflectionEnvelope = [];
 if useLegacyStep9
     fprintf('      Step 9 deflection path: legacy_step9 (single-case).\n');
 else
@@ -715,6 +718,17 @@ else
     fprintf('      Governing environment case: %s\n', deflectionEnvelope.environment_case);
 end
 fprintf('Step 9: tower-top deflection -- finished.\n\n');
+
+summaryPath = fullfile(modelRoot, 'directional_summary.txt');
+if useLegacyStep5
+    summary = build_directional_summary(cfg, [], []);
+elseif useLegacyStep9
+    summary = build_directional_summary(cfg, ulsFloorRecords, []);
+else
+    summary = build_directional_summary(cfg, ulsFloorRecords, deflectionEnvelope);
+end
+write_directional_summary(summaryPath, summary);
+fprintf('Directional summary written to %s\n', summaryPath);
 
 % Step 10: Export members/nodes for 3-D (local y/z, mudline z=0)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

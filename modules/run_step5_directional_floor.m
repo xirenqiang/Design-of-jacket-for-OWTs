@@ -78,4 +78,7 @@ end
 fprintf('      After %d leg / %d brace iterations, floor %d ULS pass.\n', ...
     count_leg, count_brace, floorId);
 V4_tension = floorEnvelope.demands.max_leg_tension;
+floorEnvelope.floor_id = floorId;
+floorEnvelope.leg_capacity = floorCtx.F_allowable_leg;
+floorEnvelope.brace_capacity = floorCtx.F_allowable_brace;
 end
