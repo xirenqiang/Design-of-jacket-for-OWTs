@@ -1,0 +1,7 @@
+script,status,requirement,error
+Test_direction_scenarios.m,PASS,direction_scenario_table,
+Test_combine_plan_loads.m,PASS,eq48_algebra,
+Test_uls_member_demands.m,PASS,four_leg_envelope,
+Test_wave_angle_kinematics.m,PASS,beta0_hydro_regression,
+Test_direction_mode_selection.m,PASS,mode_dispatch,
+Test_write_directional_summary.m,PASS,summary_metadata,

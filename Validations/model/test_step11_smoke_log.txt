@@ -1,0 +1,172 @@
+Step 11 directional validation run started: 26-May-2026 08:15:17
+
+--- Running Step 11 minimum validation manifest ---
+PASS: manifest entry direction_scenario_table -> Test_direction_scenarios.m
+PASS: manifest entry eq48_algebra -> Test_combine_plan_loads.m
+PASS: manifest entry four_leg_envelope -> Test_uls_member_demands.m
+PASS: manifest entry beta0_hydro_regression -> Test_wave_angle_kinematics.m
+PASS: manifest entry mode_dispatch -> Test_direction_mode_selection.m
+PASS: manifest entry summary_metadata -> Test_write_directional_summary.m
+All Step 11 validation manifest checks passed.
+
+--- Running Test_direction_scenarios.m (direction_scenario_table) ---
+PASS: auto_envelope D1-D4
+PASS: single_direction SINGLE
+PASS: legacy_pesai LEGACY
+PASS: invalid load_direction_mode rejected
+PASS: missing cfg field rejected
+PASS: Step 9 auto_envelope scenario/path cross-check
+PASS: Step 9 legacy_pesai scenario/path cross-check
+All direction_scenarios smoke tests passed.
+PASS: Test_direction_scenarios.m
+
+--- Running Test_combine_plan_loads.m (eq48_algebra) ---
+PASS: combine_plan_loads hand check (0, 90)
+PASS: combine_plan_loads hand check (45, 45)
+All combine_plan_loads smoke tests passed.
+PASS: Test_combine_plan_loads.m
+
+--- Running Test_uls_member_demands.m (four_leg_envelope) ---
+PASS: symmetric My-dominant compression and brace
+PASS: tension envelope non-negative
+PASS: asymmetric geometry governing compression leg id
+PASS: Mx-dominant governing leg selection
+PASS: coupled moments and tension id mapping
+PASS: four-leg requirement enforced
+All uls_member_demands smoke tests passed.
+PASS: Test_uls_member_demands.m
+
+--- Running Test_wave_angle_kinematics.m (beta0_hydro_regression) ---
+PASS: wave_phase_x_eff hand checks
+PASS: Vel_fluid_particle beta=0 matches legacy formula
+PASS: ACC_fluid_particle beta=0 matches legacy formula
+PASS: surface_elevation beta=0 matches legacy formula
+PASS: Vel_fluid_particle beta=90 sanity
+PASS: resolve_wave_beta_propagation global fallback
+PASS: hydro_load_directional_max beta=0 matches legacy chain
+All wave angle kinematics smoke tests passed.
+PASS: Test_wave_angle_kinematics.m
+
+--- Running Test_direction_mode_selection.m (mode_dispatch) ---
+PASS: mode_name dispatch
+PASS: direction_scenarios counts
+PASS: resolve_step9_deflection_path gating
+All direction mode selection smoke tests passed.
+PASS: Test_direction_mode_selection.m
+
+--- Running Test_write_directional_summary.m (summary_metadata) ---
+=== Directional Load Summary ===
+mode = auto_envelope
+governing_direction_case = D4
+beta_wind = 45 deg
+beta_wave = 45 deg
+governing_environment_case = EWM_50+Hm50
+governing_floor = 3
+governing_member_type = brace
+governing_member_id = 12
+demand = 1.5e+06
+capacity = 1.2e+06
+=== Directional Deflection Summary ===
+governing_direction_case = D2
+beta_wind = 0 deg
+beta_wave = 90 deg
+governing_environment_case = 1yr_NTM
+governing_member_type = deflection
+max_deflection = 0.35 m
+PASS: write_directional_summary paper dual-section format
+=== Directional Load Summary (Legacy) ===
+mode = legacy_pesai
+pesai_legacy = 45 deg
+calculation = old scalar formulation
+purpose = regression comparison only
+PASS: write_directional_summary legacy format
+PASS: write_directional_summary validates required fields
+All write_directional_summary tests passed.
+PASS: Test_write_directional_summary.m
+
+--- Running Step 11 extended directional regression ---
+
+--- Running Test_build_design_config.m ---
+PASS: inputdata.dat -> cfg
+PASS: defaults for partial struct
+PASS: invalid load_direction_mode rejected
+PASS: negative delta_D_leg rejected
+All build_design_config smoke tests passed.
+PASS: Test_build_design_config.m
+
+--- Running Test_coordinate_mapping_helpers.m ---
+PASS: rotation_matrix_code_xz matches legacy matrix
+PASS: paper/code angle round-trip
+PASS: paper_plan_components_to_code
+PASS: auto_envelope azimuth uses psi_site
+PASS: single_direction azimuth uses psi_site
+PASS: legacy_pesai azimuth uses pesai_legacy
+PASS: default inputdata.dat azimuth from cfg
+PASS: invalid load_direction_mode rejected
+All coordinate mapping helper smoke tests passed.
+PASS: Test_coordinate_mapping_helpers.m
+
+--- Running Test_get_floor_leg_positions.m ---
+PASS: floor 1 four-leg geometry and centroid
+PASS: floor 2 geometry extraction
+PASS: invalid floor rejected
+PASS: invalid leg id rejected
+PASS: non-four-leg floor rejected
+All get_floor_leg_positions smoke tests passed.
+PASS: Test_get_floor_leg_positions.m
+
+--- Running Test_step6_bottom_floor_tension_selection.m ---
+PASS: bottom-floor-only V4 assignment (4 floors)
+PASS: bottom-floor-only V4 assignment (3 floors)
+All Step 6 bottom-floor tension selection tests passed.
+PASS: Test_step6_bottom_floor_tension_selection.m
+
+--- Running Test_step7_brace_demand.m ---
+PASS: Eq.52 numeric consistency (Fx-only)
+PASS: Eq.52 numeric consistency (Fx+Fy)
+PASS: InvalidBraceAngle at cos(sitah) ~ 0
+PASS: brace demand stable and pesai-independent (no pesai in API)
+PASS: legacy vs paper formula separation confirmed
+All Step 7 brace demand tests passed.
+PASS: Test_step7_brace_demand.m
+
+--- Running Test_step8_directional_envelope_integration.m ---
+PASS: step5_floor_indices bounds for Num_floor=3/4
+PASS: step5_floor_indices rejects invalid Num_floor
+PASS: resolve_step5_uls_path mode split
+PASS: direction_scenarios counts for Step 8 modes
+PASS: legacy scenarios excluded from uls_floor_envelope
+PASS: build_hydro_cache_key stability and separation
+PASS: hydro cache hit on repeated key
+PASS: resize_member_sections uses configured deltas
+PASS: resolve_step9_deflection_path mode split
+All Step 8 directional envelope integration tests passed.
+PASS: Test_step8_directional_envelope_integration.m
+
+--- Running Test_directional_deflection_envelope.m ---
+PASS: select_governing_deflection picks maximum deflection
+PASS: select_governing_deflection rejects empty input
+PASS: legacy scenarios excluded from directional_deflection_envelope
+PASS: directional_deflection_envelope output fields and single scenario
+PASS: directional_deflection_envelope auto_envelope D1-D4 integration
+PASS: compute_towertop_deflection_case legacy/directional beta=0 parity
+All Step 9 directional deflection envelope tests passed.
+PASS: Test_directional_deflection_envelope.m
+
+--- Running Test_step9_mode_gating.m ---
+PASS: resolve_step9_deflection_path mode gating
+PASS: Step 5 and Step 9 path dispatch consistency
+PASS: resolve_step9_deflection_path validates cfg fields
+All Step 9 mode gating tests passed.
+PASS: Test_step9_mode_gating.m
+
+--- Running Test_build_directional_summary.m ---
+PASS: build_directional_summary selects governing ULS floor
+PASS: build_directional_summary attaches deflection block
+PASS: build_directional_summary legacy branch
+PASS: build_directional_summary rejects empty ulsRecords
+All build_directional_summary tests passed.
+PASS: Test_build_directional_summary.m
+
+Step 11 directional validation run finished: all tests passed.
+Directional validation matrix written to C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\directional_validation_pass_fail_matrix.csv
