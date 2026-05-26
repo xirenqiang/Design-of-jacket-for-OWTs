@@ -766,6 +766,27 @@ Minimum validation additions:
 - Mode dispatch test for `auto_envelope`, `single_direction`, `legacy_pesai`.
 - Summary metadata test.
 
+**Implementation status (2026-05-26):** Step 11 complete.
+
+- `Validations/model/directional_validation_manifest.m` — maps 6 minimum PLAN requirements to executable test scripts
+- `Validations/model/Test_step11_validation_manifest.m` — manifest completeness and script existence checks (all PASS)
+- `Validations/model/Run_step11_directional_validation.m` — runs minimum + extended directional regression suite; writes matrix CSV
+- `Validations/directional_validation_pass_fail_matrix.csv` — Step 11 pass/fail matrix for directional validation scripts
+- `Validations/model/test_step11_smoke_log.txt` — Step 11 validation run log (all PASS)
+
+Minimum requirement mapping:
+
+| Requirement | Test script |
+|-------------|-------------|
+| Direction scenario table | `Test_direction_scenarios.m` |
+| Eq. (48) algebra | `Test_combine_plan_loads.m` |
+| Four-leg envelope | `Test_uls_member_demands.m` |
+| beta_wave=0 hydro regression | `Test_wave_angle_kinematics.m` |
+| Mode dispatch | `Test_direction_mode_selection.m` |
+| Summary metadata | `Test_write_directional_summary.m` |
+
+Note: Full legacy hydro script matrix refresh remains Step 12 scope (`validation_pass_fail_matrix.csv`).
+
 ### Step 12 — Update user-facing documentation and rebuild
 
 After code changes:
