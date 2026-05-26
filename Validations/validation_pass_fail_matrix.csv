@@ -16,17 +16,14 @@ model/Test_step9_mode_gating.m,PASS,
 model/Test_uls_member_demands.m,PASS,
 model/Test_wave_angle_kinematics.m,PASS,
 model/Test_write_directional_summary.m,PASS,
-model/DriveCode_1.m,FAIL,"MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_1.m 行:100 列:9
-字符向量未正常终止。"
-model/DriveCode_250401.m,FAIL,"MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_250401.m 行:77 列:9
-字符向量未正常终止。"
-modulus/Test_Member_Hydro.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
-modulus/Test_Member_Hydro_sample0.m,FAIL,"MATLAB:m_unexpected_sep: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\modulus\Test_Member_Hydro_sample0.m 行:90 列:12
-表达式无效。请检查缺失或多余的字符。"
-modulus/Test_Member_Hydro_sample1.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
-modulus/Test_Member_Hydro_sample10_allbar.m,FAIL,"MATLAB:TooManyOutputs: 输出参数太多。"
-modulus/Test_Member_Hydro_sample11_allbar.m,FAIL,"MATLAB:minrhs: 输入参数的数目不足。"
-modulus/Test_Member_Hydro_sample12.m,FAIL,"MATLAB:minrhs: 输入参数的数目不足。"
+model/DriveCode_1.m,PASS,
+model/DriveCode_250401.m,PASS,
+modulus/Test_Member_Hydro.m,PASS,
+modulus/Test_Member_Hydro_sample0.m,PASS,
+modulus/Test_Member_Hydro_sample1.m,PASS,
+modulus/Test_Member_Hydro_sample10_allbar.m,PASS,
+modulus/Test_Member_Hydro_sample11_allbar.m,PASS,
+modulus/Test_Member_Hydro_sample12.m,PASS,
 modulus/Test_Member_Hydro_sample2.m,PASS,
 modulus/Test_Member_Hydro_sample3.m,PASS,
 modulus/Test_Member_Hydro_sample4.m,PASS,
@@ -37,12 +34,12 @@ modulus/Test_Member_Hydro_sample7_modify.m,PASS,
 modulus/Test_Member_Hydro_sample7_modify2.m,PASS,
 modulus/Test_Member_Hydro_sample8.m,PASS,
 modulus/Test_Member_Hydro_sample9_allbar.m,PASS,
-modulus/Test_Member_Hydro_test1.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
-modulus/Test_Member_Hydro_test2.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
-modulus/Test_Member_Hydro_test3.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
-modulus/Test_Member_Hydro_test4.m,FAIL,"MATLAB:TooManyInputs: 输入参数太多。"
+modulus/Test_Member_Hydro_test1.m,PASS,
+modulus/Test_Member_Hydro_test2.m,PASS,
+modulus/Test_Member_Hydro_test3.m,PASS,
+modulus/Test_Member_Hydro_test4.m,PASS,
 modulus/Test_Vel_fluid.m,PASS,
 modulus/Test_coordinate.m,PASS,
 modulus/Test_current_vel.m,PASS,
 modulus/Test_intergral_mode_shape.m,PASS,
-modulus/Test_y_coordinate.m,FAIL,"MATLAB:undefinedVarOrClass: 未定义变量 ""Member"" 或类 ""Member.Xt""。"
+modulus/Test_y_coordinate.m,PASS,

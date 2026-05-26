@@ -163,17 +163,29 @@ Abrace=0.2*Aleg;                                            % brace area fractio
 D_leg_ini=4*Aleg/(3.14*(1-23^2/25^2));                      % initial leg OD (m)
 t_leg_ini=D_leg_ini/25;
 fprintf('      Initial leg OD D_leg_ini = %f, wall t_leg_ini = %f\n',D_leg_ini,t_leg_ini);
-prompt='      Enter initial jacket leg OD D_leg = ';
-D_leg=input(prompt);
-prompt='      Enter initial jacket leg wall thickness t_leg = ';
-t_leg=input(prompt);
+if usejava('desktop')
+    prompt='      Enter initial jacket leg OD D_leg = ';
+    D_leg=input(prompt);
+    prompt='      Enter initial jacket leg wall thickness t_leg = ';
+    t_leg=input(prompt);
+else
+    D_leg=D_leg_ini;
+    t_leg=t_leg_ini;
+    fprintf('      Non-interactive mode: using D_leg=%f, t_leg=%f\n', D_leg, t_leg);
+end
 D_brace_ini=0.4*D_leg_ini;
 t_brace_ini=Abrace/(3.14*D_brace_ini);
 fprintf('      Initial brace OD D_brace_ini = %f, wall t_brace_ini = %f\n',D_brace_ini,t_brace_ini);
-prompt='      Enter initial jacket brace OD D_brace = ';
-D_brace=input(prompt);
-prompt='      Enter initial jacket brace wall thickness t_brace = ';
-t_brace=input(prompt);
+if usejava('desktop')
+    prompt='      Enter initial jacket brace OD D_brace = ';
+    D_brace=input(prompt);
+    prompt='      Enter initial jacket brace wall thickness t_brace = ';
+    t_brace=input(prompt);
+else
+    D_brace=D_brace_ini;
+    t_brace=t_brace_ini;
+    fprintf('      Non-interactive mode: using D_brace=%f, t_brace=%f\n', D_brace, t_brace);
+end
 % Leg and brace ID maps per floor
 LegidPfloor=set_leg_ID_per_floor(Num_floor, Num_pile);
 BraceidPfloor=set_brace_ID_per_floor(Num_floor, Num_pile);
@@ -273,7 +285,11 @@ fprintf('Step 5: member strength checks.\n');
 step5Path = resolve_step5_uls_path(cfg);
 useLegacyStep5 = strcmp(step5Path, 'legacy_pesai');
 V4 = 0;
-ulsFloorRecords = [];
+ulsFloorRecords = struct( ...
+    'floor_id', {}, 'direction_case', {}, 'environment_case', {}, ...
+    'beta_wind', {}, 'beta_wave', {}, 'controls', {}, ...
+    'leg_ratio', {}, 'brace_ratio', {}, 'member_type', {}, ...
+    'demand', {}, 'capacity', {}, 'member_id', {});
 if useLegacyStep5
     fprintf('      Step 5 ULS path: legacy_pesai (scalar).\n');
     fprintf('      Brace formula: H/cos(sitah)/cosd(pesai) for regression.\n');

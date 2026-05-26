@@ -87,14 +87,13 @@ for k=1:N
     Mx=0;Mz=0;
     for j=1:Num_element
         dt_L=Discrete.dL(1);
-        dy=
         y(j)=Member.Y0(i)+(j-0.5)*dt_L*cosd(Member.fai_y(i));
         x(j)=Member.X0(i)+(j-0.5)*dt_L*sind(Member.fai_y(i))*sind(Member.cita_x(i));
         A=[cosd(pesai),sind(pesai);-sind(pesai),cosd(pesai)]*[Member.X0(i)+(j-0.5)*dt_L*sind(Member.fai_y(i))*cosd(Member.cita_x(i));Member.Y0(i)+(j-0.5)*dt_L*sind(Member.fai_y(i))*sind(Member.cita_x(i))];
         x(j,1)=A(1,1);
         z(j,1)=A(2,1);
-        [ux(j),vy(j)]=Vel_fluid_particle(Wave.T,Wave.h,Wave.k,Wave.S,Current.Vc,x(j),y(j),t(k));
-        [ax(j),ay(j)]=ACC_fluid_particle(Wave.T,Wave.h,Wave.k,Wave.S,x(j),y(j),t(k));
+        [ux(j),vy(j)]=Vel_fluid_particle(Wave.T,Wave.h,Wave.k,Wave.S,Current.Vc,x(j),y(j),t(k),z(j,1));
+        [ax(j),ay(j)]=ACC_fluid_particle(Wave.T,Wave.h,Wave.k,Wave.S,x(j),y(j),t(k),z(j,1));
         [V(j),un(j),vn(j),wn(j)]=Vel_resolve(ux(j),vy(j),Member.cx(i),Member.cy(i),Member.cz(i));
         [anx(j),any(j),anz(j)]=ACC_resolve(ax(j),ay(j),Member.cx(i),Member.cy(i),Member.cz(i));
         Fjx=(0.5*Hydro.density*Member.D(i)*Hydro.cd*V(j)*un(j)+0.25*Hydro.density*pi*(Member.D(i))^2*Hydro.cm*anx(j))*dt_L; %

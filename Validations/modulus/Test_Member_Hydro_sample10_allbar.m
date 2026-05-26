@@ -119,29 +119,17 @@ Current.Vc=0;% 海流速度
 t0=0;
 t1=100;
 dt=0.1;
-N=(t1-t0)/dt+1;
-t=zeros(N,1);
-Ftx=zeros(N,1);
-F_bracex=zeros(N,Num_bar);
-M_bracez=zeros(N,Num_bar);
-Fty=zeros(N,1);
-Ftz=zeros(N,1);
-Mtx=zeros(N,1);
-Mtz=zeros(N,1);
-for i=1:N
-    t(i)=(i-1)*dt;
-    [Ftx(i),Fty(i),Ftz(i),Mtx(i),Mtz(i),F_brax,M_brz]=Hydro_structure(Num_bar,t(i));
-    F_bracex(i,:)=F_brax;
-    M_bracez(i,:)=M_brz;
-end
+Num_bar_array=1:Num_bar;
+y0_position=Member.Y0(1);
+[Ftx,Fty,Ftz,Mtx,Mtz,t]=Hydro_load_timehistory(t0,t1,dt,Num_bar_array,y0_position);
 Ftx_max=max(abs(Ftx));
 Fty_max=max(abs(Fty));
 Ftz_max=max(abs(Ftz));
 Mtx_max=max(abs(Mtx));
 Mtz_max=max(abs(Mtz));
-plot(t,F_bracex(:,1))
+plot(t,Ftx)
 hold on
-plot(t,F_bracex(:,2),'r')
+plot(t,Fty,'r')
 
 
 

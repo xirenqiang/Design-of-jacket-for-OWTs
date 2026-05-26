@@ -1,4 +1,4 @@
-Validation matrix refresh started: 26-May-2026 08:38:35
+Validation matrix refresh started: 26-May-2026 14:14:08
 
 --- Running model/Test_build_design_config.m ---
 PASS: inputdata.dat -> cfg
@@ -174,102 +174,88 @@ All write_directional_summary tests passed.
 PASS: model/Test_write_directional_summary.m
 
 --- Running model/DriveCode_1.m ---
-FAIL: model/DriveCode_1.m
-  MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_1.m 行:100 列:9
-字符向量未正常终止。
+Loaded configuration:
+                        k_weibull: 11.7500
+                        s_weibull: 2.0400
+                            n_min: 6.9000
+                            n_max: 12.1000
+                            M_rna: 350000
+                      D_Tower_top: 4
+                   D_Tower_bottom: 5.6000
+                              m_t: 261100
+                          h_Tower: 70
+                               av: 2.4200
+                        Num_floor: 4
+                         Num_pile: 4
+                            L_top: 8
+                      water_depth: 50
+                             Hs50: 8.2400
+                             Hm50: 15.3300
+                    steel_density: 7850
+                                E: 2.1000e+11
+                              Mtp: 666000
+                              U_r: 11.4000
+                               Ar: 12469
+                      air_density: 1.2250
+                               Lk: 340.2000
+                            I_ref: 0.1800
+                           Lambda: 42
+                            U_ref: 50
+                            z_hub: 90
+                              Ct1: 0.5000
+                              Hs2: 1.0700
+                          density: 1025
+                               cd: 1
+                               cm: 2
+                                S: 50
+                            U_ss0: 0.6000
+                            U_ns0: 1.2000
+                            h_ref: 20
+                           L_pile: 50
+                         wgh_soil: 10000
+                         fs_limit: 95700
+              load_direction_mode: 1
+                         psi_site: 0
+                        beta_wind: 0
+                        beta_wave: 45
+                     pesai_legacy: 45
+    enable_directional_deflection: 1
+                      delta_D_leg: 0.1000
+                      delta_t_leg: 0.0050
+                    delta_D_brace: 0.0600
+                    delta_t_brace: 0.0100
 
---- Running model/DriveCode_250401.m ---
-FAIL: model/DriveCode_250401.m
-  MATLAB:m_unterminated_string: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\DriveCode_250401.m 行:77 列:9
-字符向量未正常终止。
+Directional load mode: auto_envelope (load_direction_mode=1)
+Normalized design config (cfg):
+              load_direction_mode: 1
+                         psi_site: 0
+                        beta_wind: 0
+                        beta_wave: 45
+                     pesai_legacy: 45
+    enable_directional_deflection: 1
+                      delta_D_leg: 0.1000
+                      delta_t_leg: 0.0050
+                    delta_D_brace: 0.0600
+                    delta_t_brace: 0.0100
+                       uls_factor: 1.3000
+                        mode_name: 'auto_envelope'
 
---- Running modulus/Test_Member_Hydro.m ---
-FAIL: modulus/Test_Member_Hydro.m
-  MATLAB:TooManyInputs: 输入参数太多。
+Tower mass per unit length (kg/m): 3730.00
+Tower mass estimate (kg): 261100.00
+Platform Z (m): 66.98
+Step 1: input parameters -- finished.
 
---- Running modulus/Test_Member_Hydro_sample0.m ---
-FAIL: modulus/Test_Member_Hydro_sample0.m
-  MATLAB:m_unexpected_sep: 错误: 文件:C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\modulus\Test_Member_Hydro_sample0.m 行:90 列:12
-表达式无效。请检查缺失或多余的字符。
+Step 2: jacket global geometry.
+      Mode: 4-bay jacket
+4
+      Building 4-bay member node coordinates
+Step 2: jacket global geometry -- finished.
 
---- Running modulus/Test_Member_Hydro_sample1.m ---
-FAIL: modulus/Test_Member_Hydro_sample1.m
-  MATLAB:TooManyInputs: 输入参数太多。
+Step 3: initial member cross-sections.
+      Target system frequency (Hz): 0.221833
+      Initial leg OD D_leg_ini = 0.321897, wall t_leg_ini = 0.012876
+      Non-interactive mode: using D_leg=0.321897, t_leg=0.012876
+      Initial brace OD D_brace_ini = 0.128759, wall t_brace_ini = 0.019200
+      Non-interactive mode: using D_brace=0.128759, t_brace=0.019200
+Step 3: initial member cross-sections -- finished.
 
---- Running modulus/Test_Member_Hydro_sample10_allbar.m ---
-FAIL: modulus/Test_Member_Hydro_sample10_allbar.m
-  MATLAB:TooManyOutputs: 输出参数太多。
-
---- Running modulus/Test_Member_Hydro_sample11_allbar.m ---
-FAIL: modulus/Test_Member_Hydro_sample11_allbar.m
-  MATLAB:minrhs: 输入参数的数目不足。
-
---- Running modulus/Test_Member_Hydro_sample12.m ---
-FAIL: modulus/Test_Member_Hydro_sample12.m
-  MATLAB:minrhs: 输入参数的数目不足。
-
---- Running modulus/Test_Member_Hydro_sample2.m ---
-PASS: modulus/Test_Member_Hydro_sample2.m
-
---- Running modulus/Test_Member_Hydro_sample3.m ---
-PASS: modulus/Test_Member_Hydro_sample3.m
-
---- Running modulus/Test_Member_Hydro_sample4.m ---
-PASS: modulus/Test_Member_Hydro_sample4.m
-
---- Running modulus/Test_Member_Hydro_sample5.m ---
-PASS: modulus/Test_Member_Hydro_sample5.m
-
---- Running modulus/Test_Member_Hydro_sample6.m ---
-PASS: modulus/Test_Member_Hydro_sample6.m
-
---- Running modulus/Test_Member_Hydro_sample7.m ---
-PASS: modulus/Test_Member_Hydro_sample7.m
-
---- Running modulus/Test_Member_Hydro_sample7_modify.m ---
-PASS: modulus/Test_Member_Hydro_sample7_modify.m
-
---- Running modulus/Test_Member_Hydro_sample7_modify2.m ---
-PASS: modulus/Test_Member_Hydro_sample7_modify2.m
-
---- Running modulus/Test_Member_Hydro_sample8.m ---
-PASS: modulus/Test_Member_Hydro_sample8.m
-
---- Running modulus/Test_Member_Hydro_sample9_allbar.m ---
-PASS: modulus/Test_Member_Hydro_sample9_allbar.m
-
---- Running modulus/Test_Member_Hydro_test1.m ---
-FAIL: modulus/Test_Member_Hydro_test1.m
-  MATLAB:TooManyInputs: 输入参数太多。
-
---- Running modulus/Test_Member_Hydro_test2.m ---
-FAIL: modulus/Test_Member_Hydro_test2.m
-  MATLAB:TooManyInputs: 输入参数太多。
-
---- Running modulus/Test_Member_Hydro_test3.m ---
-FAIL: modulus/Test_Member_Hydro_test3.m
-  MATLAB:TooManyInputs: 输入参数太多。
-
---- Running modulus/Test_Member_Hydro_test4.m ---
-FAIL: modulus/Test_Member_Hydro_test4.m
-  MATLAB:TooManyInputs: 输入参数太多。
-
---- Running modulus/Test_Vel_fluid.m ---
-PASS: modulus/Test_Vel_fluid.m
-
---- Running modulus/Test_coordinate.m ---
-PASS: modulus/Test_coordinate.m
-
---- Running modulus/Test_current_vel.m ---
-PASS: modulus/Test_current_vel.m
-
---- Running modulus/Test_intergral_mode_shape.m ---
-PASS: modulus/Test_intergral_mode_shape.m
-
---- Running modulus/Test_y_coordinate.m ---
-FAIL: modulus/Test_y_coordinate.m
-  MATLAB:undefinedVarOrClass: 未定义变量 "Member" 或类 "Member.Xt"。
-
-Validation matrix refresh finished: 31 PASS, 13 FAIL
-Matrix written to C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\validation_pass_fail_matrix.csv
-Log written to C:\Users\xrq\Documents\MATLAB\jacket_design_5MW\Validations\model\test_step12_validation_matrix_log.txt

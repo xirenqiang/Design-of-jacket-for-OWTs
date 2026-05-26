@@ -1,0 +1,14 @@
+PLAN closure validation matrix refresh: 26-May-2026
+Source: Validations/validation_pass_fail_matrix.csv (regenerated after legacy script repairs)
+
+Summary: 44 PASS / 0 FAIL
+
+Repairs applied in closure plan (Tier C):
+- DriveCode_1.m / DriveCode_250401.m: thin wrappers calling DriveCodeJckDesign('inputdata.dat')
+- Hydro_member1 API: removed obsolete 5th pesai argument (6 scripts)
+- Hydro_load_timehistory / Discrete_bar API fixes (sample10/11/12)
+- Test_Member_Hydro_sample0.m syntax fix
+- Test_y_coordinate.m Member/Discrete bootstrap
+- DriveCodeJckDesign.m: non-interactive Step 3 sizing; ulsFloorRecords struct-array init
+
+Regenerate: addpath('Validations'); Run_validation_matrix;

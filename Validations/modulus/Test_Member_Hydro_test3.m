@@ -73,7 +73,7 @@ Mtx=zeros(N,1);
 Mtz=zeros(N,1);
 for i=1:N
     ti=(i-1)*dt;
-    [Ftx(i),Fty(i),Ftz(i),Mtx(i),Mtz(i)]=Hydro_member1(1,Discrete.Num_ele(1),Discrete.dL(1),ti,0);
+    [Ftx(i),Fty(i),Ftz(i),Mtx(i),Mtz(i)]=Hydro_member1(1,Discrete.Num_ele(1),Discrete.dL(1),ti);
 end
 Ftx_max=max(abs(Ftx));
 Fty_max=max(abs(Fty));
