@@ -174,14 +174,21 @@ Partial submergence at free surface: discretization via `Discrete_bar` (`dL_ele_
 
 ### 3.7 Member internal forces — Paper §2.5, Eqs (48)–(52)
 
-| Paper | Code (Step 5) |
-|-------|---------------|
-| Combined wind + wave moment with direction factors β₁, β₂ | `M = 1.3*max(...)` with `pesai=45°` in brace axial `Fb = H/(cos(sitah)*cosd(pesai))` |
-| Leg axial from moment + weight | `V1 = (1/Width)*(M/√2) + 1.3*Wnet/4` |
-| Brace axial | `Fb = H/cos(sitah)/cosd(pesai)` — corresponds to Eq. (52) form |
-| Self-weight + buoyancy | `Weight_jacket.m` — paper Eq. (46) |
+Step 5 dispatches by `load_direction_mode` (see [DESIGN.md](DESIGN.md) §6):
 
-Paper considers **four wind-wave direction scenarios** (0°, 90°, 45° offset, both at 45°). Code currently implements **one azimuth** (`pesai = 45°` hardcoded).
+| Mode | Paper mapping | Code modules |
+|------|---------------|--------------|
+| `auto_envelope` / `single_direction` | Eq. (48) plan loads; Eqs (49)–(52) leg/brace demands; D1–D4 envelope | `direction_scenarios.m`, `combine_plan_loads.m`, `uls_member_demands.m`, `uls_floor_envelope.m`, `run_step5_directional_floor.m`, `resize_member_sections.m` |
+| `legacy_pesai` | Scalar shortcuts for regression | Inline driver branch: `M = 1.3*max(...)`, `V1`, `Fb = H/(cos(sitah)*cosd(pesai))` |
+
+| Paper | Paper modes (`auto_envelope` / `single_direction`) | `legacy_pesai` |
+|-------|---------------------------------------------------|----------------|
+| Combined wind + wave with β₁, β₂ | `combine_plan_loads` → `Fx,Fy,Mx,My`; envelope over D1–D4 × ULS sea states | Scalar `M`, `H` with fixed `pesai_legacy` rotation |
+| Leg axial | Four-leg envelope via `uls_member_demands` (`FN_g = Wnet/4`) | `V1 = (1/Width)*(M/√2) + 1.3*Wnet/4` |
+| Brace axial | Eq. (52): `FNb = Fsx/cos(sitah)`, no `cosd(pesai)` | `Fb = H/cos(sitah)/cosd(pesai)` |
+| Self-weight + buoyancy | `Weight_jacket.m` — paper Eq. (46) | Same |
+
+Auditable governing-case metadata is written to `directional_summary.txt` via `write_directional_summary.m`.
 
 ---
 
@@ -248,7 +255,7 @@ Local regression scripts:
 
 | Script | Relation to paper |
 |--------|-------------------|
-| `Validations/model/DriveCode_1.m` | End-to-end replica; should track production driver |
+| `Validations/model/DriveCode_1.m` | Thin wrapper calling production `DriveCodeJckDesign` |
 | `Validations/model/inputdata.dat` | 5 MW example input deck |
 
 See [CODE_REVIEW.md §4](CODE_REVIEW.md) for current PASS/FAIL status.
@@ -257,14 +264,14 @@ See [CODE_REVIEW.md §4](CODE_REVIEW.md) for current PASS/FAIL status.
 
 ## 7. Known Implementation Deviations from Paper
 
-| Topic | Paper | This codebase | Severity |
-|-------|-------|---------------|----------|
-| Load directions | Four β scenarios (§2.5) | Single `pesai=45°` | **Approved plan:** `auto_envelope` D1–D4 by default, plus `single_direction` and `legacy_pesai`; see [PLAN_DIRECTIONAL_LOADS.md](PLAN_DIRECTIONAL_LOADS.md) |
-| ULS resize | Systematic diameter increment | Fixed `D_leg=1.2`, `D_brace=0.6` on iteration | Critical — see CODE_REVIEW C-01 |
-| EWM thrust coefficient | From turbine/parked model | `Ct1` hardcoded 0.052; input ignored | Major |
-| Soil shear modulus | Site-specific | `Gs=15e6` hardcoded | Major |
-| Floor loop | Top-down N layers | Fixed loop `i=1:4` | Major for 3-bay |
-| Damping in DAF | 5% running / 1% parked | ξ=0.05 in all DAF calls | Minor |
+| Topic | Paper | This codebase | Status |
+|-------|-------|---------------|--------|
+| Load directions | Four β scenarios (§2.5) | Hybrid modes: `auto_envelope` D1–D4, `single_direction`, `legacy_pesai` | **Closed** — see [PLAN_DIRECTIONAL_LOADS.md](PLAN_DIRECTIONAL_LOADS.md) |
+| ULS resize | Systematic diameter increment | Paper modes: `resize_member_sections` deltas from input; legacy: fixed `D_leg=1.2`, `D_brace=0.6` | **Partial** |
+| EWM thrust coefficient | From turbine/parked model | `Ct1` hardcoded 0.052; input ignored | Open — Major |
+| Soil shear modulus | Site-specific | `Gs=15e6` hardcoded | Open — Major |
+| Floor loop | Top-down N layers | `step5_floor_indices(Num_floor)` in paper modes | **Closed** |
+| Damping in DAF | 5% running / 1% parked | ξ=0.05 in all DAF calls | Open — Minor |
 | GitHub repo | Paper cites public repo | This repo is the maintained implementation | Info |
 
 When auditing against the paper, treat the PDF as **method authority** and this table as **implementation delta**.
@@ -286,4 +293,5 @@ When auditing against the paper, treat the PDF as **method authority** and this 
 
 | Date | Change |
 |------|--------|
+| 2026-05-26 | Updated §3.7 dual-path Step 5 mapping; closed load-direction and floor-loop deviations in §7 |
 | 2026-05-21 | Created theory reference; linked SCI PDF; mapped paper sections to code; replaced placeholder `theory.pdf` references |

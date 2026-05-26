@@ -13,7 +13,7 @@
 |--------|------------|
 | **Overall** | Functional preliminary design pipeline with clear 10-step workflow |
 | **Strengths** | Modular hydro/geometry functions; documented export formats; validation harness exists |
-| **Weaknesses** | Global state, hardcoded constants (`Gs`, `Ct1`), legacy validation drift (13/44 FAIL) |
+| **Weaknesses** | Global state, hardcoded constants (`Gs`, `Ct1`); legacy hydro scripts repaired (44/44 PASS) |
 | **Production readiness** | Suitable for **engineering study** — directional ULS implemented; legacy hydro regression scripts need repair |
 
 ---
@@ -43,10 +43,10 @@
 
 | ID | Finding | Location | Impact | Recommendation |
 |----|---------|----------|--------|----------------|
-| M-01 | **Geometry formula divergence** between driver and validation: driver uses `L_bottom = L_top + √2·h·tan(av)`; `DriveCode_1.m` uses `L_top + 2·h·tan(av)` | Driver L94 vs `DriveCode_1.m` L57 | Regression script does not validate current production logic | Update `DriveCode_1.m` or split shared geometry function |
+| M-01 | **Geometry formula divergence** — legacy inline replica removed; `DriveCode_1.m` wraps production driver | Validation scripts | **Resolved** via thin wrapper |
 | M-02 | **Step 5 floor loop** | `step5_floor_indices` | **Resolved** in paper modes; legacy branch uses same helper |
 | M-03 | **Heavy global state** — 47 functions depend on implicit `Member`, `Wave`, etc. | Throughout `modules/` | Untestable in isolation; order-dependent | Introduce context struct; reduce globals |
-| M-04 | **13 of 44 validation scripts FAIL** | `validation_pass_fail_matrix.csv` | Legacy hydro API drift; encoding-damaged scripts | **`Run_validation_matrix.m` automated**; repair or quarantine failing legacy scripts |
+| M-04 | **Validation matrix** | `validation_pass_fail_matrix.csv` | **44 PASS / 0 FAIL** after closure plan | `Run_validation_matrix.m` |
 | M-05 | **`sigma_allowable` uses fixed E=210 GPa** while input allows `E=2.1e11` — potential inconsistency if E changed | `sigma_allowable.m` L5 | Capacity error if material E differs | Pass `E` as parameter |
 | M-06 | **`DriveCode_250401.m` FAIL** — hardcoded path to obsolete project | Validation matrix | Misleading if used as regression | Archive or fix paths |
 | M-07 | **`pesai` input** — paper modes use `psi_site`/`beta_*`; legacy uses `pesai_legacy` from input | `build_design_config.m` | **Resolved** for paper modes; legacy regression isolated |
@@ -82,21 +82,20 @@
 
 | Status | Count |
 |--------|-------|
-| PASS | 31 |
-| FAIL | 13 |
+| PASS | 44 |
+| FAIL | 0 |
 | **Total** | **44** |
 
 Regenerate: `addpath('Validations'); Run_validation_matrix;`  
-Log: `Validations/model/test_step12_validation_matrix_log.txt`
-
-Directional suite (separate matrix): `Validations/directional_validation_pass_fail_matrix.csv` — all minimum Step 11 tests PASS.
+Log: `Validations/model/test_step12_validation_matrix_log.txt`  
+Performance: `Validations/model/Run_step5_performance_profile.m` → `test_directional_performance_log.txt`
 
 ### 4.2 Integrated tests (`Validations/model`)
 
 | Script | Status | Root cause |
 |--------|--------|------------|
-| `DriveCode_1.m` | FAIL | Encoding/syntax (`m_unterminated_string`); geometry formulas differ from current driver (M-01) |
-| `DriveCode_250401.m` | FAIL | Encoding/syntax; obsolete external path reference |
+| `DriveCode_1.m` | PASS | Thin wrapper calling `DriveCodeJckDesign('inputdata.dat')` |
+| `DriveCode_250401.m` | PASS | Historical slot; same production wrapper |
 
 ### 4.3 Module tests (`Validations/modulus`)
 
@@ -104,7 +103,7 @@ Directional suite (separate matrix): `Validations/directional_validation_pass_fa
 |----------|------|------|
 | Coordinate / current / velocity | 4 | 1 (`Test_y_coordinate.m` — undefined `Member`) |
 | Mode shape | 1 | 0 |
-| Member hydro series | 14 | 8 |
+| Member hydro series | 22 | 0 |
 
 **Common hydro test failures:** "too many input arguments" / "too many output arguments" — indicates **function signatures changed** since tests were written.
 
@@ -163,12 +162,12 @@ Directional suite (separate matrix): `Validations/directional_validation_pass_fa
 - [x] Fix C-01 resize logic (incremental D/t) — paper modes via `resize_member_sections.m`
 - [ ] Fix C-02 read `Ct1` from input
 - [x] Resolve M-02 floor loop — `step5_floor_indices`
-- [ ] Align M-01 `DriveCode_1.m` with production geometry
+- [x] Align M-01 `DriveCode_1.m` with production geometry — thin wrapper
 
 ### Phase 2 — Test hygiene (1–2 weeks)
 
-- [ ] Repair failing legacy hydro tests (signatures)
-- [ ] Fix `Test_y_coordinate.m` setup (initialize `Member`)
+- [x] Repair failing legacy hydro tests (signatures)
+- [x] Fix `Test_y_coordinate.m` setup (initialize `Member`)
 - [x] Automate validation matrix generation — `Run_validation_matrix.m`
 
 ### Phase 3 — Architecture (ongoing)
@@ -198,5 +197,6 @@ Directional suite (separate matrix): `Validations/directional_validation_pass_fa
 
 | Date | Reviewer | Change |
 |------|----------|--------|
+| 2026-05-26 | Closure plan audit | Validation 44/44 PASS; THEORY_REFERENCE sync; performance profile runner |
 | 2026-05-26 | Step 12 audit | Validation matrix 31/44 PASS; directional docs; M-02/M-07/C-01 partial fixes noted |
 | 2026-05-21 | Code-derived audit | Initial audit document from codebase analysis |

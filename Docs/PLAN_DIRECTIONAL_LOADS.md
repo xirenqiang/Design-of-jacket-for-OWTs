@@ -369,13 +369,13 @@ Paper claims **< 10 min** total — profile after implementation; target same or
 
 | Document | Update |
 |----------|--------|
-| `THEORY_REFERENCE.md` | §7 deviations closed; coordinate/sign conventions |
-| `DESIGN.md` | Step 5 rewritten; scenario table |
-| `REQUIREMENTS.md` | FR for multi-direction ULS |
-| `ARCHITECTURE.md` | New modules, data flow |
-| `CODE_REVIEW.md` | Close M-07; add performance notes |
-| `USER_MANUAL.md` | New input params, runtime flags |
-| `PLAN_DIRECTIONAL_LOADS.md` | Mark Phase 0 decisions as approved after implementation begins |
+| `THEORY_REFERENCE.md` | §3.7 dual-path Step 5; §7 deviations updated (**done**) |
+| `DESIGN.md` | Step 5 rewritten; scenario table (**done**) |
+| `REQUIREMENTS.md` | FR for multi-direction ULS (**done**) |
+| `ARCHITECTURE.md` | New modules, data flow (**done**) |
+| `CODE_REVIEW.md` | Close M-07; add performance notes (**done**) |
+| `USER_MANUAL.md` | New input params, runtime flags (**done**) |
+| `PLAN_DIRECTIONAL_LOADS.md` | Steps 1–12 complete on `main` (**done**) |
 
 ---
 
@@ -393,36 +393,36 @@ Paper claims **< 10 min** total — profile after implementation; target same or
 
 ### Phase 1 — Foundation (1–2 weeks)
 
-- [ ] Add `direction_scenarios.m`, `combine_plan_loads.m`, `uls_member_demands.m`
-- [ ] Unit tests with hand calculations
-- [ ] No change to driver yet
+- [x] Add `direction_scenarios.m`, `combine_plan_loads.m`, `uls_member_demands.m`
+- [x] Unit tests with hand calculations
+- [x] No change to driver yet
 
 ### Phase 2 — Wave direction in hydro (2 weeks)
 
-- [ ] Extend `Wave.beta_propagation` + `Vel_fluid_particle` / `ACC_fluid_particle` (H1)
-- [ ] Update `Hydro_load_1and50yrs` to pass/use β₂; retain β₂=0 regression
-- [ ] Test: β₂=0 matches baseline
+- [x] Extend `Wave.beta_propagation` + `Vel_fluid_particle` / `ACC_fluid_particle` (H1)
+- [x] Update `Hydro_load_1and50yrs` to pass/use β₂; retain β₂=0 regression
+- [x] Test: β₂=0 matches baseline
 
 ### Phase 3 — Step 5 integration (2 weeks)
 
-- [ ] Extract Step 5 loop body to `uls_floor_envelope.m`
-- [ ] Wire scenario loop + Eq. 48–52 demands
-- [ ] Feature modes: `auto_envelope`, `single_direction`, `legacy_pesai`
-- [ ] Integrate with corrected resize increments
-- [ ] Report governing direction/environment metadata in log/output
+- [x] Extract Step 5 loop body to `uls_floor_envelope.m`
+- [x] Wire scenario loop + Eq. 48–52 demands
+- [x] Feature modes: `auto_envelope`, `single_direction`, `legacy_pesai`
+- [x] Integrate with corrected resize increments
+- [x] Report governing direction/environment metadata in log/output
 
 ### Phase 4 — Structural azimuth cleanup (1 week)
 
-- [ ] Split `pesai` semantics into `psi_site`, `beta_wave`, `beta_wind`, `pesai_legacy`
-- [ ] Input file fields for mode, angles, deflection flag, resize increments
-- [ ] Update `Coord_trans_bar_discrete` call semantics in docs
+- [x] Split `pesai` semantics into `psi_site`, `beta_wave`, `beta_wind`, `pesai_legacy`
+- [x] Input file fields for mode, angles, deflection flag, resize increments
+- [x] Update `Coord_trans_bar_discrete` call semantics in docs
 
 ### Phase 5 — Validation & release (1–2 weeks)
 
-- [ ] Full validation matrix update
-- [ ] Performance profiling
-- [ ] Rebuild `.exe`; update USER_MANUAL
-- [ ] Version tag e.g. `v2.0-directional-uls`
+- [x] Full validation matrix update
+- [x] Performance profiling (closure plan Tier B)
+- [x] Rebuild `.exe`; update USER_MANUAL
+- [x] Version tag e.g. `v2.0-directional-uls`
 
 **Estimated total:** 7–10 weeks (one developer, part-time review).
 
@@ -467,7 +467,7 @@ Paper claims **< 10 min** total — profile after implementation; target same or
 | `legacy_pesai` reporting | Preserve old calculation behaviour for regression, but emit a separate summary identifying `mode=legacy_pesai`, `pesai_legacy`, and that old scalar formulas were used. |
 | New summary requirement | All modes must produce auditable metadata. `auto_envelope` and `single_direction` must report controlling direction case, `β₁`, `β₂`, environment case, floor, member type, demand, and capacity. |
 
-There are no remaining open planning questions. Implementation may proceed from Phase 1 when code changes are approved.
+There are no remaining open planning questions. Implementation complete on `main` (2026-05-26).
 
 ---
 
@@ -486,7 +486,7 @@ There are no remaining open planning questions. Implementation may proceed from 
 | Delivery | 5 phases; closed implementation checklist in §17 |
 | Compatibility | Explicit legacy mode until validation complete |
 
-**Planning is closed. MATLAB source code changes should begin only when the user explicitly asks to implement the approved plan.**
+**Implementation complete on `main` (2026-05-26).** See §17 for step-by-step delivery record.
 
 ---
 
@@ -520,8 +520,6 @@ Default design mode is `load_direction_mode = 1` (`auto_envelope`).
 - `modules/DriveCodeJckDesign.m` — calls `build_design_config` after `readData`, prints `cfg`
 - `Validations/model/Test_build_design_config.m` — smoke tests (all PASS)
 
-Note: `cfg` is normalized and logged at Step 1; directional ULS/deflection logic is not yet wired (Steps 3+).
-
 ### Step 2 — Add direction scenario generation
 
 Create `direction_scenarios.m`:
@@ -539,8 +537,6 @@ Create `direction_scenarios.m`:
 - `modules/direction_scenarios.m` — D1–D4 / SINGLE / LEGACY scenario generation per §18.2
 - `Validations/model/Test_direction_scenarios.m` — smoke tests (all PASS)
 - `Validations/model/test_direction_scenarios_log.txt` — captured pass log
-
-Note: `direction_scenarios` is implemented and tested; not yet wired into `DriveCodeJckDesign` (Steps 3+).
 
 ### Step 3 — Add paper-to-code coordinate mapping helpers
 
@@ -784,8 +780,6 @@ Minimum requirement mapping:
 | beta_wave=0 hydro regression | `Test_wave_angle_kinematics.m` |
 | Mode dispatch | `Test_direction_mode_selection.m` |
 | Summary metadata | `Test_write_directional_summary.m` |
-
-Note: Full legacy hydro script matrix refresh remains Step 12 scope (`validation_pass_fail_matrix.csv`).
 
 ### Step 12 — Update user-facing documentation and rebuild
 
